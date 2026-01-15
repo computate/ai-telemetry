@@ -78,7 +78,7 @@
 		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
 		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
-		<postgresql.version>42.5.1</postgresql.version>
+		<postgresql.version>42.7.9</postgresql.version>
 		<ongres-scram.version>2.1</ongres-scram.version>
 		<junit.version>5.9.1</junit.version>
 		<junit-platform-launcher.version>1.4.2</junit-platform-launcher.version>
