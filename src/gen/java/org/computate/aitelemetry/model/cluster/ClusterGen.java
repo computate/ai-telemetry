@@ -1478,6 +1478,146 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return ngsildData;
   }
 
+	/////////////////////
+  // nodesReadyTotal //
+	/////////////////////
+
+
+  /**
+   *  The entity nodesReadyTotal
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Integer nodesReadyTotal;
+
+  /**
+   * <br> The entity nodesReadyTotal
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:nodesReadyTotal">Find the entity nodesReadyTotal in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _nodesReadyTotal(Wrap<Integer> w);
+
+  public Integer getNodesReadyTotal() {
+    return nodesReadyTotal;
+  }
+
+  public void setNodesReadyTotal(Integer nodesReadyTotal) {
+    this.nodesReadyTotal = nodesReadyTotal;
+  }
+  @JsonIgnore
+  public void setNodesReadyTotal(String o) {
+    this.nodesReadyTotal = Cluster.staticSetNodesReadyTotal(siteRequest_, o);
+  }
+  public static Integer staticSetNodesReadyTotal(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Integer.parseInt(o);
+    return null;
+  }
+  protected Cluster nodesReadyTotalInit() {
+    Wrap<Integer> nodesReadyTotalWrap = new Wrap<Integer>().var("nodesReadyTotal");
+    if(nodesReadyTotal == null) {
+      _nodesReadyTotal(nodesReadyTotalWrap);
+      Optional.ofNullable(nodesReadyTotalWrap.getO()).ifPresent(o -> {
+        setNodesReadyTotal(o);
+      });
+    }
+    return (Cluster)this;
+  }
+
+  public static Integer staticSearchNodesReadyTotal(SiteRequest siteRequest_, Integer o) {
+    return o;
+  }
+
+  public static String staticSearchStrNodesReadyTotal(SiteRequest siteRequest_, Integer o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqNodesReadyTotal(SiteRequest siteRequest_, String o) {
+    return Cluster.staticSearchNodesReadyTotal(siteRequest_, Cluster.staticSetNodesReadyTotal(siteRequest_, o)).toString();
+  }
+
+  public Integer sqlNodesReadyTotal() {
+    return nodesReadyTotal;
+  }
+
+  public static String staticJsonNodesReadyTotal(Integer nodesReadyTotal) {
+    return Optional.ofNullable(nodesReadyTotal).map(v -> v.toString()).orElse(null);
+  }
+
+	////////////////////////
+  // nodesNotReadyTotal //
+	////////////////////////
+
+
+  /**
+   *  The entity nodesNotReadyTotal
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonSerialize(using = ToStringSerializer.class)
+  @JsonInclude(Include.NON_NULL)
+  protected Integer nodesNotReadyTotal;
+
+  /**
+   * <br> The entity nodesNotReadyTotal
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:nodesNotReadyTotal">Find the entity nodesNotReadyTotal in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _nodesNotReadyTotal(Wrap<Integer> w);
+
+  public Integer getNodesNotReadyTotal() {
+    return nodesNotReadyTotal;
+  }
+
+  public void setNodesNotReadyTotal(Integer nodesNotReadyTotal) {
+    this.nodesNotReadyTotal = nodesNotReadyTotal;
+  }
+  @JsonIgnore
+  public void setNodesNotReadyTotal(String o) {
+    this.nodesNotReadyTotal = Cluster.staticSetNodesNotReadyTotal(siteRequest_, o);
+  }
+  public static Integer staticSetNodesNotReadyTotal(SiteRequest siteRequest_, String o) {
+    if(NumberUtils.isParsable(o))
+      return Integer.parseInt(o);
+    return null;
+  }
+  protected Cluster nodesNotReadyTotalInit() {
+    Wrap<Integer> nodesNotReadyTotalWrap = new Wrap<Integer>().var("nodesNotReadyTotal");
+    if(nodesNotReadyTotal == null) {
+      _nodesNotReadyTotal(nodesNotReadyTotalWrap);
+      Optional.ofNullable(nodesNotReadyTotalWrap.getO()).ifPresent(o -> {
+        setNodesNotReadyTotal(o);
+      });
+    }
+    return (Cluster)this;
+  }
+
+  public static Integer staticSearchNodesNotReadyTotal(SiteRequest siteRequest_, Integer o) {
+    return o;
+  }
+
+  public static String staticSearchStrNodesNotReadyTotal(SiteRequest siteRequest_, Integer o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqNodesNotReadyTotal(SiteRequest siteRequest_, String o) {
+    return Cluster.staticSearchNodesNotReadyTotal(siteRequest_, Cluster.staticSetNodesNotReadyTotal(siteRequest_, o)).toString();
+  }
+
+  public Integer sqlNodesNotReadyTotal() {
+    return nodesNotReadyTotal;
+  }
+
+  public static String staticJsonNodesNotReadyTotal(Integer nodesNotReadyTotal) {
+    return Optional.ofNullable(nodesNotReadyTotal).map(v -> v.toString()).orElse(null);
+  }
+
 	//////////////////
   // aiNodesTotal //
 	//////////////////
@@ -2098,6 +2238,68 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     return statusStorage;
   }
 
+	/////////////////
+  // statusNodes //
+	/////////////////
+
+
+  /**
+   *  The entity statusNodes
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected String statusNodes;
+
+  /**
+   * <br> The entity statusNodes
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.cluster.Cluster&fq=entiteVar_enUS_indexed_string:statusNodes">Find the entity statusNodes in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _statusNodes(Wrap<String> w);
+
+  public String getStatusNodes() {
+    return statusNodes;
+  }
+  public void setStatusNodes(String o) {
+    this.statusNodes = Cluster.staticSetStatusNodes(siteRequest_, o);
+  }
+  public static String staticSetStatusNodes(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+  protected Cluster statusNodesInit() {
+    Wrap<String> statusNodesWrap = new Wrap<String>().var("statusNodes");
+    if(statusNodes == null) {
+      _statusNodes(statusNodesWrap);
+      Optional.ofNullable(statusNodesWrap.getO()).ifPresent(o -> {
+        setStatusNodes(o);
+      });
+    }
+    return (Cluster)this;
+  }
+
+  public static String staticSearchStatusNodes(SiteRequest siteRequest_, String o) {
+    return o;
+  }
+
+  public static String staticSearchStrStatusNodes(SiteRequest siteRequest_, String o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqStatusNodes(SiteRequest siteRequest_, String o) {
+    return Cluster.staticSearchStatusNodes(siteRequest_, Cluster.staticSetStatusNodes(siteRequest_, o)).toString();
+  }
+
+  public String sqlStatusNodes() {
+    return statusNodes;
+  }
+
+  public static String staticJsonStatusNodes(String statusNodes) {
+    return statusNodes;
+  }
+
   //////////////
   // initDeep //
   //////////////
@@ -2146,6 +2348,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         ngsildPathInit();
         ngsildContextInit();
         ngsildDataInit();
+        nodesReadyTotalInit();
+        nodesNotReadyTotalInit();
         aiNodesTotalInit();
         gpuDevicesTotalInit();
         vmsTotalInit();
@@ -2155,6 +2359,7 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         cephCapacityBytesInit();
         grafanaUrlInit();
         statusStorageInit();
+        statusNodesInit();
         promise2.complete();
       } catch(Exception ex) {
         promise2.fail(ex);
@@ -2244,6 +2449,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return oCluster.ngsildContext;
       case "ngsildData":
         return oCluster.ngsildData;
+      case "nodesReadyTotal":
+        return oCluster.nodesReadyTotal;
+      case "nodesNotReadyTotal":
+        return oCluster.nodesNotReadyTotal;
       case "aiNodesTotal":
         return oCluster.aiNodesTotal;
       case "gpuDevicesTotal":
@@ -2262,6 +2471,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return oCluster.grafanaUrl;
       case "statusStorage":
         return oCluster.statusStorage;
+      case "statusNodes":
+        return oCluster.statusNodes;
       default:
         return super.obtainBaseModel(var);
     }
@@ -2343,6 +2554,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSetNgsildContext(siteRequest_, v);
     case "ngsildData":
       return Cluster.staticSetNgsildData(siteRequest_, v);
+    case "nodesReadyTotal":
+      return Cluster.staticSetNodesReadyTotal(siteRequest_, v);
+    case "nodesNotReadyTotal":
+      return Cluster.staticSetNodesNotReadyTotal(siteRequest_, v);
     case "aiNodesTotal":
       return Cluster.staticSetAiNodesTotal(siteRequest_, v);
     case "gpuDevicesTotal":
@@ -2361,6 +2576,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSetGrafanaUrl(siteRequest_, v);
     case "statusStorage":
       return Cluster.staticSetStatusStorage(siteRequest_, v);
+    case "statusNodes":
+      return Cluster.staticSetStatusNodes(siteRequest_, v);
       default:
         return BaseModel.staticSetBaseModel(entityVar,  siteRequest_, v, o);
     }
@@ -2564,6 +2781,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSearchNgsildContext(siteRequest_, (String)o);
     case "ngsildData":
       return Cluster.staticSearchNgsildData(siteRequest_, (JsonObject)o);
+    case "nodesReadyTotal":
+      return Cluster.staticSearchNodesReadyTotal(siteRequest_, (Integer)o);
+    case "nodesNotReadyTotal":
+      return Cluster.staticSearchNodesNotReadyTotal(siteRequest_, (Integer)o);
     case "aiNodesTotal":
       return Cluster.staticSearchAiNodesTotal(siteRequest_, (Integer)o);
     case "gpuDevicesTotal":
@@ -2582,6 +2803,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSearchGrafanaUrl(siteRequest_, (String)o);
     case "statusStorage":
       return Cluster.staticSearchStatusStorage(siteRequest_, (String)o);
+    case "statusNodes":
+      return Cluster.staticSearchStatusNodes(siteRequest_, (String)o);
       default:
         return BaseModel.staticSearchBaseModel(entityVar,  siteRequest_, o);
     }
@@ -2632,6 +2855,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSearchStrNgsildContext(siteRequest_, (String)o);
     case "ngsildData":
       return Cluster.staticSearchStrNgsildData(siteRequest_, (String)o);
+    case "nodesReadyTotal":
+      return Cluster.staticSearchStrNodesReadyTotal(siteRequest_, (Integer)o);
+    case "nodesNotReadyTotal":
+      return Cluster.staticSearchStrNodesNotReadyTotal(siteRequest_, (Integer)o);
     case "aiNodesTotal":
       return Cluster.staticSearchStrAiNodesTotal(siteRequest_, (Integer)o);
     case "gpuDevicesTotal":
@@ -2650,6 +2877,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSearchStrGrafanaUrl(siteRequest_, (String)o);
     case "statusStorage":
       return Cluster.staticSearchStrStatusStorage(siteRequest_, (String)o);
+    case "statusNodes":
+      return Cluster.staticSearchStrStatusNodes(siteRequest_, (String)o);
       default:
         return BaseModel.staticSearchStrBaseModel(entityVar,  siteRequest_, o);
     }
@@ -2700,6 +2929,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSearchFqNgsildContext(siteRequest_, o);
     case "ngsildData":
       return Cluster.staticSearchFqNgsildData(siteRequest_, o);
+    case "nodesReadyTotal":
+      return Cluster.staticSearchFqNodesReadyTotal(siteRequest_, o);
+    case "nodesNotReadyTotal":
+      return Cluster.staticSearchFqNodesNotReadyTotal(siteRequest_, o);
     case "aiNodesTotal":
       return Cluster.staticSearchFqAiNodesTotal(siteRequest_, o);
     case "gpuDevicesTotal":
@@ -2718,6 +2951,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return Cluster.staticSearchFqGrafanaUrl(siteRequest_, o);
     case "statusStorage":
       return Cluster.staticSearchFqStatusStorage(siteRequest_, o);
+    case "statusNodes":
+      return Cluster.staticSearchFqStatusNodes(siteRequest_, o);
       default:
         return BaseModel.staticSearchFqBaseModel(entityVar,  siteRequest_, o);
     }
@@ -2828,6 +3063,22 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         }
         saves.add("ngsildData");
         return val;
+      } else if("nodesreadytotal".equals(varLower)) {
+        if(val instanceof Integer) {
+          setNodesReadyTotal((Integer)val);
+        } else {
+          setNodesReadyTotal(val == null ? null : val.toString());
+        }
+        saves.add("nodesReadyTotal");
+        return val;
+      } else if("nodesnotreadytotal".equals(varLower)) {
+        if(val instanceof Integer) {
+          setNodesNotReadyTotal((Integer)val);
+        } else {
+          setNodesNotReadyTotal(val == null ? null : val.toString());
+        }
+        saves.add("nodesNotReadyTotal");
+        return val;
       } else if("ainodestotal".equals(varLower)) {
         if(val instanceof Integer) {
           setAiNodesTotal((Integer)val);
@@ -2889,6 +3140,12 @@ public abstract class ClusterGen<DEV> extends BaseModel {
           setStatusStorage((String)val);
         }
         saves.add("statusStorage");
+        return val;
+      } else if("statusnodes".equals(varLower)) {
+        if(val instanceof String) {
+          setStatusNodes((String)val);
+        }
+        saves.add("statusNodes");
         return val;
     } else {
       return super.persistBaseModel(var, val);
@@ -3022,6 +3279,18 @@ public abstract class ClusterGen<DEV> extends BaseModel {
           oCluster.setNgsildData(ngsildData);
       }
 
+      if(saves.contains("nodesReadyTotal")) {
+        Integer nodesReadyTotal = (Integer)doc.get("nodesReadyTotal_docvalues_int");
+        if(nodesReadyTotal != null)
+          oCluster.setNodesReadyTotal(nodesReadyTotal);
+      }
+
+      if(saves.contains("nodesNotReadyTotal")) {
+        Integer nodesNotReadyTotal = (Integer)doc.get("nodesNotReadyTotal_docvalues_int");
+        if(nodesNotReadyTotal != null)
+          oCluster.setNodesNotReadyTotal(nodesNotReadyTotal);
+      }
+
       if(saves.contains("aiNodesTotal")) {
         Integer aiNodesTotal = (Integer)doc.get("aiNodesTotal_docvalues_int");
         if(aiNodesTotal != null)
@@ -3074,6 +3343,12 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         String statusStorage = (String)doc.get("statusStorage_docvalues_string");
         if(statusStorage != null)
           oCluster.setStatusStorage(statusStorage);
+      }
+
+      if(saves.contains("statusNodes")) {
+        String statusNodes = (String)doc.get("statusNodes_docvalues_string");
+        if(statusNodes != null)
+          oCluster.setStatusNodes(statusNodes);
       }
     }
 
@@ -3147,6 +3422,12 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     if(ngsildData != null) {
       doc.put("ngsildData_docvalues_string", ngsildData.encode());
     }
+    if(nodesReadyTotal != null) {
+      doc.put("nodesReadyTotal_docvalues_int", nodesReadyTotal);
+    }
+    if(nodesNotReadyTotal != null) {
+      doc.put("nodesNotReadyTotal_docvalues_int", nodesNotReadyTotal);
+    }
     if(aiNodesTotal != null) {
       doc.put("aiNodesTotal_docvalues_int", aiNodesTotal);
     }
@@ -3173,6 +3454,9 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     }
     if(statusStorage != null) {
       doc.put("statusStorage_docvalues_string", statusStorage);
+    }
+    if(statusNodes != null) {
+      doc.put("statusNodes_docvalues_string", statusNodes);
     }
     super.indexBaseModel(doc);
 
@@ -3216,6 +3500,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return "ngsildContext_docvalues_string";
       case "ngsildData":
         return "ngsildData_docvalues_string";
+      case "nodesReadyTotal":
+        return "nodesReadyTotal_docvalues_int";
+      case "nodesNotReadyTotal":
+        return "nodesNotReadyTotal_docvalues_int";
       case "aiNodesTotal":
         return "aiNodesTotal_docvalues_int";
       case "gpuDevicesTotal":
@@ -3234,6 +3522,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return "grafanaUrl_docvalues_string";
       case "statusStorage":
         return "statusStorage_docvalues_string";
+      case "statusNodes":
+        return "statusNodes_docvalues_string";
       default:
         return BaseModel.varStoredBaseModel(entityVar);
     }
@@ -3277,6 +3567,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return "ngsildContext_docvalues_string";
       case "ngsildData":
         return "ngsildData_docvalues_string";
+      case "nodesReadyTotal":
+        return "nodesReadyTotal_docvalues_int";
+      case "nodesNotReadyTotal":
+        return "nodesNotReadyTotal_docvalues_int";
       case "aiNodesTotal":
         return "aiNodesTotal_docvalues_int";
       case "gpuDevicesTotal":
@@ -3295,6 +3589,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return "grafanaUrl_docvalues_string";
       case "statusStorage":
         return "statusStorage_docvalues_string";
+      case "statusNodes":
+        return "statusNodes_docvalues_string";
       default:
         return BaseModel.varIndexedBaseModel(entityVar);
     }
@@ -3338,6 +3634,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return "ngsildContext";
       case "ngsildData_docvalues_string":
         return "ngsildData";
+      case "nodesReadyTotal_docvalues_int":
+        return "nodesReadyTotal";
+      case "nodesNotReadyTotal_docvalues_int":
+        return "nodesNotReadyTotal";
       case "aiNodesTotal_docvalues_int":
         return "aiNodesTotal";
       case "gpuDevicesTotal_docvalues_int":
@@ -3356,6 +3656,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         return "grafanaUrl";
       case "statusStorage_docvalues_string":
         return "statusStorage";
+      case "statusNodes_docvalues_string":
+        return "statusNodes";
       default:
         return BaseModel.searchVarBaseModel(searchVar);
     }
@@ -3410,6 +3712,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     oCluster.setNgsildPath(Optional.ofNullable(doc.get("ngsildPath_docvalues_string")).map(v -> v.toString()).orElse(null));
     oCluster.setNgsildContext(Optional.ofNullable(doc.get("ngsildContext_docvalues_string")).map(v -> v.toString()).orElse(null));
     oCluster.setNgsildData(Optional.ofNullable(doc.get("ngsildData_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oCluster.setNodesReadyTotal(Optional.ofNullable(doc.get("nodesReadyTotal_docvalues_int")).map(v -> v.toString()).orElse(null));
+    oCluster.setNodesNotReadyTotal(Optional.ofNullable(doc.get("nodesNotReadyTotal_docvalues_int")).map(v -> v.toString()).orElse(null));
     oCluster.setAiNodesTotal(Optional.ofNullable(doc.get("aiNodesTotal_docvalues_int")).map(v -> v.toString()).orElse(null));
     oCluster.setGpuDevicesTotal(Optional.ofNullable(doc.get("gpuDevicesTotal_docvalues_int")).map(v -> v.toString()).orElse(null));
     oCluster.setVmsTotal(Optional.ofNullable(doc.get("vmsTotal_docvalues_int")).map(v -> v.toString()).orElse(null));
@@ -3419,6 +3723,7 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     oCluster.setCephCapacityBytes(Optional.ofNullable(doc.get("cephCapacityBytes_docvalues_string")).map(v -> v.toString()).orElse(null));
     oCluster.setGrafanaUrl(Optional.ofNullable(doc.get("grafanaUrl_docvalues_string")).map(v -> v.toString()).orElse(null));
     oCluster.setStatusStorage(Optional.ofNullable(doc.get("statusStorage_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oCluster.setStatusNodes(Optional.ofNullable(doc.get("statusNodes_docvalues_string")).map(v -> v.toString()).orElse(null));
 
     super.storeBaseModel(doc);
   }
@@ -3468,6 +3773,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         apiRequest.addVars("ngsildContext");
       if(!Objects.equals(ngsildData, original.getNgsildData()))
         apiRequest.addVars("ngsildData");
+      if(!Objects.equals(nodesReadyTotal, original.getNodesReadyTotal()))
+        apiRequest.addVars("nodesReadyTotal");
+      if(!Objects.equals(nodesNotReadyTotal, original.getNodesNotReadyTotal()))
+        apiRequest.addVars("nodesNotReadyTotal");
       if(!Objects.equals(aiNodesTotal, original.getAiNodesTotal()))
         apiRequest.addVars("aiNodesTotal");
       if(!Objects.equals(gpuDevicesTotal, original.getGpuDevicesTotal()))
@@ -3486,6 +3795,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
         apiRequest.addVars("grafanaUrl");
       if(!Objects.equals(statusStorage, original.getStatusStorage()))
         apiRequest.addVars("statusStorage");
+      if(!Objects.equals(statusNodes, original.getStatusNodes()))
+        apiRequest.addVars("statusNodes");
       super.apiRequestBaseModel();
     }
   }
@@ -3515,6 +3826,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     sb.append(Optional.ofNullable(ngsildPath).map(v -> "ngsildPath: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(ngsildContext).map(v -> "ngsildContext: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(ngsildData).map(v -> "ngsildData: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(nodesReadyTotal).map(v -> "nodesReadyTotal: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(nodesNotReadyTotal).map(v -> "nodesNotReadyTotal: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(aiNodesTotal).map(v -> "aiNodesTotal: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(gpuDevicesTotal).map(v -> "gpuDevicesTotal: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(vmsTotal).map(v -> "vmsTotal: " + v + "\n").orElse(""));
@@ -3524,6 +3837,7 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     sb.append(Optional.ofNullable(cephCapacityBytes).map(v -> "cephCapacityBytes: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(grafanaUrl).map(v -> "grafanaUrl: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(statusStorage).map(v -> "statusStorage: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(statusNodes).map(v -> "statusNodes: \"" + v + "\"\n" ).orElse(""));
     return sb.toString();
   }
 
@@ -3570,6 +3884,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   public static final String SET_ngsildContext = "setNgsildContext";
   public static final String VAR_ngsildData = "ngsildData";
   public static final String SET_ngsildData = "setNgsildData";
+  public static final String VAR_nodesReadyTotal = "nodesReadyTotal";
+  public static final String SET_nodesReadyTotal = "setNodesReadyTotal";
+  public static final String VAR_nodesNotReadyTotal = "nodesNotReadyTotal";
+  public static final String SET_nodesNotReadyTotal = "setNodesNotReadyTotal";
   public static final String VAR_aiNodesTotal = "aiNodesTotal";
   public static final String SET_aiNodesTotal = "setAiNodesTotal";
   public static final String VAR_gpuDevicesTotal = "gpuDevicesTotal";
@@ -3588,6 +3906,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   public static final String SET_grafanaUrl = "setGrafanaUrl";
   public static final String VAR_statusStorage = "statusStorage";
   public static final String SET_statusStorage = "setStatusStorage";
+  public static final String VAR_statusNodes = "statusNodes";
+  public static final String SET_statusNodes = "setStatusNodes";
 
   public static List<String> varsQForClass() {
     return Cluster.varsQCluster(new ArrayList<String>());
@@ -3615,6 +3935,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     vars.add(VAR_ngsildPath);
     vars.add(VAR_ngsildContext);
     vars.add(VAR_ngsildData);
+    vars.add(VAR_nodesReadyTotal);
+    vars.add(VAR_nodesNotReadyTotal);
     vars.add(VAR_aiNodesTotal);
     vars.add(VAR_gpuDevicesTotal);
     vars.add(VAR_vmsTotal);
@@ -3633,6 +3955,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   public static List<String> varsRangeCluster(List<String> vars) {
     vars.add(VAR_location);
     vars.add(VAR_ngsildData);
+    vars.add(VAR_nodesReadyTotal);
+    vars.add(VAR_nodesNotReadyTotal);
     vars.add(VAR_aiNodesTotal);
     vars.add(VAR_gpuDevicesTotal);
     vars.add(VAR_vmsTotal);
@@ -3660,6 +3984,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   public static final String DISPLAY_NAME_ngsildPath = "NGSILD-Path";
   public static final String DISPLAY_NAME_ngsildContext = "NGSILD context";
   public static final String DISPLAY_NAME_ngsildData = "NGSILD data";
+  public static final String DISPLAY_NAME_nodesReadyTotal = "nodes ready total";
+  public static final String DISPLAY_NAME_nodesNotReadyTotal = "nodes not ready total";
   public static final String DISPLAY_NAME_aiNodesTotal = "AI nodes total";
   public static final String DISPLAY_NAME_gpuDevicesTotal = "GPU devices total";
   public static final String DISPLAY_NAME_vmsTotal = "VMs total";
@@ -3669,6 +3995,7 @@ public abstract class ClusterGen<DEV> extends BaseModel {
   public static final String DISPLAY_NAME_cephCapacityBytes = "Ceph capacity bytes";
   public static final String DISPLAY_NAME_grafanaUrl = "Grafana GPU utilization";
   public static final String DISPLAY_NAME_statusStorage = "Storage";
+  public static final String DISPLAY_NAME_statusNodes = "Nodes";
 
   @Override
   public String idForClass() {
@@ -3751,6 +4078,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return patch ? SET_ngsildContext : VAR_ngsildContext;
     case VAR_ngsildData:
       return patch ? SET_ngsildData : VAR_ngsildData;
+    case VAR_nodesReadyTotal:
+      return patch ? SET_nodesReadyTotal : VAR_nodesReadyTotal;
+    case VAR_nodesNotReadyTotal:
+      return patch ? SET_nodesNotReadyTotal : VAR_nodesNotReadyTotal;
     case VAR_aiNodesTotal:
       return patch ? SET_aiNodesTotal : VAR_aiNodesTotal;
     case VAR_gpuDevicesTotal:
@@ -3769,6 +4100,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return patch ? SET_grafanaUrl : VAR_grafanaUrl;
     case VAR_statusStorage:
       return patch ? SET_statusStorage : VAR_statusStorage;
+    case VAR_statusNodes:
+      return patch ? SET_statusNodes : VAR_statusNodes;
     default:
       return BaseModel.varJsonBaseModel(var, patch);
     }
@@ -3815,6 +4148,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return DISPLAY_NAME_ngsildContext;
     case VAR_ngsildData:
       return DISPLAY_NAME_ngsildData;
+    case VAR_nodesReadyTotal:
+      return DISPLAY_NAME_nodesReadyTotal;
+    case VAR_nodesNotReadyTotal:
+      return DISPLAY_NAME_nodesNotReadyTotal;
     case VAR_aiNodesTotal:
       return DISPLAY_NAME_aiNodesTotal;
     case VAR_gpuDevicesTotal:
@@ -3833,6 +4170,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return DISPLAY_NAME_grafanaUrl;
     case VAR_statusStorage:
       return DISPLAY_NAME_statusStorage;
+    case VAR_statusNodes:
+      return DISPLAY_NAME_statusNodes;
     default:
       return BaseModel.displayNameBaseModel(var);
     }
@@ -3878,6 +4217,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return "The NGSILD context URL for @context data";
     case VAR_ngsildData:
       return "The NGSILD data with @context from the context broker";
+    case VAR_nodesReadyTotal:
+      return "The total number of ready nodes on this cluster. ";
+    case VAR_nodesNotReadyTotal:
+      return "The total number of not ready nodes on this cluster. ";
     case VAR_aiNodesTotal:
       return "The total number of AI nodes on this cluster. ";
     case VAR_gpuDevicesTotal:
@@ -3896,6 +4239,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return "Explore this cluster's GPU utilization in Grafana. ";
     case VAR_statusStorage:
       return "{{ 'Warning, no storage metrics were found. The system cannot determine the health of the storage of this cluster. ' if (cephUsedBytes is not defined or cephCapacityBytes is not defined) else 'Ceph storage status' }}";
+    case VAR_statusNodes:
+      return "{{ 'Warning, no node metrics were found. The system cannot determine the health of the nodes of this cluster. ' if (result.nodesReadyTotal is not defined or result.nodesReadyTotal == 0) else (('All ' + result.nodesReadyTotal + ' nodes healthy') if result.nodesNotReadyTotal == 0 else (result.nodesNotReadyTotal + '/' + result.nodesReadyTotal + ' nodes not ready')) }}";
       default:
         return BaseModel.descriptionBaseModel(var);
     }
@@ -3939,6 +4284,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return "String";
     case VAR_ngsildData:
       return "JsonObject";
+    case VAR_nodesReadyTotal:
+      return "Integer";
+    case VAR_nodesNotReadyTotal:
+      return "Integer";
     case VAR_aiNodesTotal:
       return "Integer";
     case VAR_gpuDevicesTotal:
@@ -3956,6 +4305,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     case VAR_grafanaUrl:
       return "String";
     case VAR_statusStorage:
+      return "String";
+    case VAR_statusNodes:
       return "String";
       default:
         return BaseModel.classSimpleNameBaseModel(var);
@@ -3999,6 +4350,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return 6;
     case VAR_ngsildData:
       return 6;
+    case VAR_nodesReadyTotal:
+      return 5;
+    case VAR_nodesNotReadyTotal:
+      return 5;
     case VAR_aiNodesTotal:
       return 5;
     case VAR_gpuDevicesTotal:
@@ -4016,6 +4371,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     case VAR_grafanaUrl:
       return 5;
     case VAR_statusStorage:
+      return 3;
+    case VAR_statusNodes:
       return 3;
       default:
         return BaseModel.htmRowBaseModel(var);
@@ -4048,6 +4405,10 @@ public abstract class ClusterGen<DEV> extends BaseModel {
       return 4;
     case VAR_ngsildData:
       return 5;
+    case VAR_nodesReadyTotal:
+      return 1;
+    case VAR_nodesNotReadyTotal:
+      return 1;
     case VAR_aiNodesTotal:
       return 1;
     case VAR_gpuDevicesTotal:
@@ -4065,6 +4426,8 @@ public abstract class ClusterGen<DEV> extends BaseModel {
     case VAR_grafanaUrl:
       return 3;
     case VAR_statusStorage:
+      return 0;
+    case VAR_statusNodes:
       return 0;
       default:
         return BaseModel.htmCellBaseModel(var);

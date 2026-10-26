@@ -796,6 +796,22 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlNgsildData());
             break;
+          case "setNodesReadyTotal":
+              o2.setNodesReadyTotal(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Cluster.VAR_nodesReadyTotal + "=$" + num);
+              num++;
+              bParams.add(o2.sqlNodesReadyTotal());
+            break;
+          case "setNodesNotReadyTotal":
+              o2.setNodesNotReadyTotal(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Cluster.VAR_nodesNotReadyTotal + "=$" + num);
+              num++;
+              bParams.add(o2.sqlNodesNotReadyTotal());
+            break;
           case "setAiNodesTotal":
               o2.setAiNodesTotal(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -859,6 +875,14 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               bSql.append(Cluster.VAR_statusStorage + "=$" + num);
               num++;
               bParams.add(o2.sqlStatusStorage());
+            break;
+          case "setStatusNodes":
+              o2.setStatusNodes(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Cluster.VAR_statusNodes + "=$" + num);
+              num++;
+              bParams.add(o2.sqlStatusNodes());
             break;
           case "setCreated":
               o2.setCreated(jsonObject.getString(entityVar));
@@ -1377,6 +1401,24 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             num++;
             bParams.add(o2.sqlNgsildData());
             break;
+          case Cluster.VAR_nodesReadyTotal:
+            o2.setNodesReadyTotal(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Cluster.VAR_nodesReadyTotal + "=$" + num);
+            num++;
+            bParams.add(o2.sqlNodesReadyTotal());
+            break;
+          case Cluster.VAR_nodesNotReadyTotal:
+            o2.setNodesNotReadyTotal(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Cluster.VAR_nodesNotReadyTotal + "=$" + num);
+            num++;
+            bParams.add(o2.sqlNodesNotReadyTotal());
+            break;
           case Cluster.VAR_aiNodesTotal:
             o2.setAiNodesTotal(jsonObject.getString(entityVar));
             if(bParams.size() > 0) {
@@ -1448,6 +1490,15 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Cluster.VAR_statusStorage + "=$" + num);
             num++;
             bParams.add(o2.sqlStatusStorage());
+            break;
+          case Cluster.VAR_statusNodes:
+            o2.setStatusNodes(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Cluster.VAR_statusNodes + "=$" + num);
+            num++;
+            bParams.add(o2.sqlStatusNodes());
             break;
           case Cluster.VAR_created:
             o2.setCreated(jsonObject.getString(entityVar));
@@ -3741,6 +3792,12 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   JsonObject old_ngsildData = Cluster.staticJsonNgsildData(o.getNgsildData());
                   JsonObject new_ngsildData = json.getJsonObject(Cluster.varJson(Cluster.VAR_ngsildData, patch));
 
+                  String old_nodesReadyTotal = Cluster.staticJsonNodesReadyTotal(o.getNodesReadyTotal());
+                  String new_nodesReadyTotal = json.getString(Cluster.varJson(Cluster.VAR_nodesReadyTotal, patch));
+
+                  String old_nodesNotReadyTotal = Cluster.staticJsonNodesNotReadyTotal(o.getNodesNotReadyTotal());
+                  String new_nodesNotReadyTotal = json.getString(Cluster.varJson(Cluster.VAR_nodesNotReadyTotal, patch));
+
                   String old_aiNodesTotal = Cluster.staticJsonAiNodesTotal(o.getAiNodesTotal());
                   String new_aiNodesTotal = json.getString(Cluster.varJson(Cluster.VAR_aiNodesTotal, patch));
 
@@ -3764,6 +3821,9 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
 
                   String old_statusStorage = Cluster.staticJsonStatusStorage(o.getStatusStorage());
                   String new_statusStorage = json.getString(Cluster.varJson(Cluster.VAR_statusStorage, patch));
+
+                  String old_statusNodes = Cluster.staticJsonStatusNodes(o.getStatusNodes());
+                  String new_statusNodes = json.getString(Cluster.varJson(Cluster.VAR_statusNodes, patch));
 
                   String old_created = Cluster.staticJsonCreated(o.getCreated());
                   String new_created = json.getString(Cluster.varJson(Cluster.VAR_created, patch));
@@ -3828,6 +3888,12 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   JsonObject ngsildData = Optional.ofNullable(Optional.ofNullable(new_ngsildData).orElse(old_ngsildData)).orElse(null);
                   // if(!Objects.equals(old_ngsildData, ngsildData))
                     // json.put(Cluster.varJson(Cluster.VAR_ngsildData, patch), ngsildData);
+                  String nodesReadyTotal = Optional.ofNullable(Optional.ofNullable(new_nodesReadyTotal).orElse(old_nodesReadyTotal)).orElse(null);
+                  // if(!Objects.equals(old_nodesReadyTotal, nodesReadyTotal))
+                    // json.put(Cluster.varJson(Cluster.VAR_nodesReadyTotal, patch), nodesReadyTotal);
+                  String nodesNotReadyTotal = Optional.ofNullable(Optional.ofNullable(new_nodesNotReadyTotal).orElse(old_nodesNotReadyTotal)).orElse(null);
+                  // if(!Objects.equals(old_nodesNotReadyTotal, nodesNotReadyTotal))
+                    // json.put(Cluster.varJson(Cluster.VAR_nodesNotReadyTotal, patch), nodesNotReadyTotal);
                   String aiNodesTotal = Optional.ofNullable(Optional.ofNullable(new_aiNodesTotal).orElse(old_aiNodesTotal)).orElse(null);
                   // if(!Objects.equals(old_aiNodesTotal, aiNodesTotal))
                     // json.put(Cluster.varJson(Cluster.VAR_aiNodesTotal, patch), aiNodesTotal);
@@ -3852,6 +3918,9 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                   String statusStorage = Optional.ofNullable(Optional.ofNullable(new_statusStorage).orElse(old_statusStorage)).orElse(null);
                   // if(!Objects.equals(old_statusStorage, statusStorage))
                     // json.put(Cluster.varJson(Cluster.VAR_statusStorage, patch), statusStorage);
+                  String statusNodes = Optional.ofNullable(Optional.ofNullable(new_statusNodes).orElse(old_statusNodes)).orElse(null);
+                  // if(!Objects.equals(old_statusNodes, statusNodes))
+                    // json.put(Cluster.varJson(Cluster.VAR_statusNodes, patch), statusNodes);
                   String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
                   // if(!Objects.equals(old_created, created))
                     // json.put(Cluster.varJson(Cluster.VAR_created, patch), created);
@@ -3912,7 +3981,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT hubId, hubResource, clusterName, hubCluster, clusterResource, description, location, id, ngsildTenant, ngsildPath, ngsildContext, ngsildData, aiNodesTotal, gpuDevicesTotal, vmsTotal, cpuCoresTotal, memoryBytesTotal, cephUsedBytes, cephCapacityBytes, statusStorage, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM Cluster WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT hubId, hubResource, clusterName, hubCluster, clusterResource, description, location, id, ngsildTenant, ngsildPath, ngsildContext, ngsildData, nodesReadyTotal, nodesNotReadyTotal, aiNodesTotal, gpuDevicesTotal, vmsTotal, cpuCoresTotal, memoryBytesTotal, cephUsedBytes, cephCapacityBytes, statusStorage, statusNodes, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM Cluster WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -4191,6 +4260,8 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       o.persistForClass(Cluster.VAR_ngsildPath, Cluster.staticSetNgsildPath(siteRequest2, (String)result.get(Cluster.VAR_ngsildPath)));
       o.persistForClass(Cluster.VAR_ngsildContext, Cluster.staticSetNgsildContext(siteRequest2, (String)result.get(Cluster.VAR_ngsildContext)));
       o.persistForClass(Cluster.VAR_ngsildData, Cluster.staticSetNgsildData(siteRequest2, (String)result.get(Cluster.VAR_ngsildData)));
+      o.persistForClass(Cluster.VAR_nodesReadyTotal, Cluster.staticSetNodesReadyTotal(siteRequest2, (String)result.get(Cluster.VAR_nodesReadyTotal)));
+      o.persistForClass(Cluster.VAR_nodesNotReadyTotal, Cluster.staticSetNodesNotReadyTotal(siteRequest2, (String)result.get(Cluster.VAR_nodesNotReadyTotal)));
       o.persistForClass(Cluster.VAR_aiNodesTotal, Cluster.staticSetAiNodesTotal(siteRequest2, (String)result.get(Cluster.VAR_aiNodesTotal)));
       o.persistForClass(Cluster.VAR_gpuDevicesTotal, Cluster.staticSetGpuDevicesTotal(siteRequest2, (String)result.get(Cluster.VAR_gpuDevicesTotal)));
       o.persistForClass(Cluster.VAR_vmsTotal, Cluster.staticSetVmsTotal(siteRequest2, (String)result.get(Cluster.VAR_vmsTotal)));
@@ -4199,6 +4270,7 @@ public class ClusterEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       o.persistForClass(Cluster.VAR_cephUsedBytes, Cluster.staticSetCephUsedBytes(siteRequest2, (String)result.get(Cluster.VAR_cephUsedBytes)));
       o.persistForClass(Cluster.VAR_cephCapacityBytes, Cluster.staticSetCephCapacityBytes(siteRequest2, (String)result.get(Cluster.VAR_cephCapacityBytes)));
       o.persistForClass(Cluster.VAR_statusStorage, Cluster.staticSetStatusStorage(siteRequest2, (String)result.get(Cluster.VAR_statusStorage)));
+      o.persistForClass(Cluster.VAR_statusNodes, Cluster.staticSetStatusNodes(siteRequest2, (String)result.get(Cluster.VAR_statusNodes)));
       o.persistForClass(Cluster.VAR_created, Cluster.staticSetCreated(siteRequest2, (String)result.get(Cluster.VAR_created), Optional.ofNullable(siteRequest).map(r -> r.getConfig()).map(config -> config.getString(ConfigKeys.SITE_ZONE)).map(z -> ZoneId.of(z)).orElse(ZoneId.of("UTC"))));
       o.persistForClass(Cluster.VAR_archived, Cluster.staticSetArchived(siteRequest2, (String)result.get(Cluster.VAR_archived)));
       o.persistForClass(Cluster.VAR_sessionId, Cluster.staticSetSessionId(siteRequest2, (String)result.get(Cluster.VAR_sessionId)));

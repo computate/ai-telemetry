@@ -21556,6 +21556,10 @@ components:
                     type: string
                   ngsildData:
                     type: object
+                  nodesReadyTotal:
+                    type: string
+                  nodesNotReadyTotal:
+                    type: string
                   aiNodesTotal:
                     type: string
                   gpuDevicesTotal:
@@ -21575,6 +21579,8 @@ components:
                   modified:
                     type: string
                   statusStorage:
+                    type: string
+                  statusNodes:
                     type: string
     PATCHClusterRequest:
       allOf:
@@ -21736,6 +21742,20 @@ components:
               type: object
             removeAllNgsildData:
               type: object
+            setNodesReadyTotal:
+              type: string
+              nullable: true
+            removeNodesReadyTotal:
+              type: string
+            removeAllNodesReadyTotal:
+              type: string
+            setNodesNotReadyTotal:
+              type: string
+              nullable: true
+            removeNodesNotReadyTotal:
+              type: string
+            removeAllNodesNotReadyTotal:
+              type: string
             setAiNodesTotal:
               type: string
               nullable: true
@@ -21805,6 +21825,13 @@ components:
             removeStatusStorage:
               type: string
             removeAllStatusStorage:
+              type: string
+            setStatusNodes:
+              type: string
+              nullable: true
+            removeStatusNodes:
+              type: string
+            removeAllStatusNodes:
               type: string
     PATCHClusterResponse:
       allOf:
@@ -21966,6 +21993,20 @@ components:
               type: object
             removeAllNgsildData:
               type: object
+            setNodesReadyTotal:
+              type: string
+              nullable: true
+            removeNodesReadyTotal:
+              type: string
+            removeAllNodesReadyTotal:
+              type: string
+            setNodesNotReadyTotal:
+              type: string
+              nullable: true
+            removeNodesNotReadyTotal:
+              type: string
+            removeAllNodesNotReadyTotal:
+              type: string
             setAiNodesTotal:
               type: string
               nullable: true
@@ -22036,6 +22077,13 @@ components:
               type: string
             removeAllStatusStorage:
               type: string
+            setStatusNodes:
+              type: string
+              nullable: true
+            removeStatusNodes:
+              type: string
+            removeAllStatusNodes:
+              type: string
     POSTClusterRequest:
       allOf:
         - type: object
@@ -22082,6 +22130,10 @@ components:
               type: string
             ngsildData:
               type: object
+            nodesReadyTotal:
+              type: string
+            nodesNotReadyTotal:
+              type: string
             aiNodesTotal:
               type: string
             gpuDevicesTotal:
@@ -22101,6 +22153,8 @@ components:
             modified:
               type: string
             statusStorage:
+              type: string
+            statusNodes:
               type: string
     POSTClusterResponse:
       allOf:
@@ -22148,6 +22202,10 @@ components:
               type: string
             ngsildData:
               type: object
+            nodesReadyTotal:
+              type: string
+            nodesNotReadyTotal:
+              type: string
             aiNodesTotal:
               type: string
             gpuDevicesTotal:
@@ -22167,6 +22225,8 @@ components:
             modified:
               type: string
             statusStorage:
+              type: string
+            statusNodes:
               type: string
     DELETEFilterClusterResponse:
       allOf:
@@ -22214,6 +22274,10 @@ components:
               type: string
             ngsildData:
               type: object
+            nodesReadyTotal:
+              type: string
+            nodesNotReadyTotal:
+              type: string
             aiNodesTotal:
               type: string
             gpuDevicesTotal:
@@ -22233,6 +22297,8 @@ components:
             modified:
               type: string
             statusStorage:
+              type: string
+            statusNodes:
               type: string
     PUTImportClusterRequest:
       allOf:
@@ -22285,6 +22351,10 @@ components:
                     type: string
                   ngsildData:
                     type: object
+                  nodesReadyTotal:
+                    type: string
+                  nodesNotReadyTotal:
+                    type: string
                   aiNodesTotal:
                     type: string
                   gpuDevicesTotal:
@@ -22304,6 +22374,8 @@ components:
                   modified:
                     type: string
                   statusStorage:
+                    type: string
+                  statusNodes:
                     type: string
     PUTImportClusterResponse:
       allOf:
@@ -22351,6 +22423,10 @@ components:
                     type: string
                   ngsildData:
                     type: object
+                  nodesReadyTotal:
+                    type: string
+                  nodesNotReadyTotal:
+                    type: string
                   aiNodesTotal:
                     type: string
                   gpuDevicesTotal:
@@ -22370,6 +22446,8 @@ components:
                   modified:
                     type: string
                   statusStorage:
+                    type: string
+                  statusNodes:
                     type: string
     GETClusterResponse:
       allOf:
@@ -22417,6 +22495,10 @@ components:
               type: string
             ngsildData:
               type: object
+            nodesReadyTotal:
+              type: string
+            nodesNotReadyTotal:
+              type: string
             aiNodesTotal:
               type: string
             gpuDevicesTotal:
@@ -22436,6 +22518,8 @@ components:
             modified:
               type: string
             statusStorage:
+              type: string
+            statusNodes:
               type: string
     DELETEClusterResponse:
       allOf:
@@ -22483,6 +22567,10 @@ components:
               type: string
             ngsildData:
               type: object
+            nodesReadyTotal:
+              type: string
+            nodesNotReadyTotal:
+              type: string
             aiNodesTotal:
               type: string
             gpuDevicesTotal:
@@ -22502,6 +22590,8 @@ components:
             modified:
               type: string
             statusStorage:
+              type: string
+            statusNodes:
               type: string
     EditPageClusterResponse:
       allOf:

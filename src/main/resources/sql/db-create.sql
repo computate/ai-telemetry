@@ -115,6 +115,8 @@ ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS ngsildTenant text;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS ngsildPath text;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS ngsildContext text;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS ngsildData jsonb;
+ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS nodesReadyTotal integer;
+ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS nodesNotReadyTotal integer;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS aiNodesTotal integer;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS gpuDevicesTotal integer;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS vmsTotal integer;
@@ -123,6 +125,7 @@ ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS memoryBytesTotal bigint;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS cephUsedBytes text;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS cephCapacityBytes text;
 ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS statusStorage text;
+ALTER TABLE Cluster ADD COLUMN IF NOT EXISTS statusNodes text;
 
 CREATE TABLE IF NOT EXISTS AiNode();
 ALTER TABLE AiNode ADD COLUMN IF NOT EXISTS pk bigserial primary key;

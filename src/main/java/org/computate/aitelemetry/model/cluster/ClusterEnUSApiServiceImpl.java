@@ -73,7 +73,7 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
   // Cluster import //
   ////////////////////
 
-  public static Future<Void> importCluster(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String classApiAddress, String possibleClusterName, JsonObject clusterMemoryBytesResult, JsonObject clusterCpuCoresResult, JsonObject clusterCephUsedBytesResult, JsonObject clusterCephCapacityBytesResult, JsonObject aiNodeResult, JsonObject gpuDeviceResult, JsonObject vmResult) {
+  public static Future<Void> importCluster(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String classApiAddress, String possibleClusterName, JsonObject nodesReadyResult, JsonObject nodesNotReadyResult, JsonObject clusterMemoryBytesResult, JsonObject clusterCpuCoresResult, JsonObject clusterCephUsedBytesResult, JsonObject clusterCephCapacityBytesResult, JsonObject aiNodeResult, JsonObject gpuDeviceResult, JsonObject vmResult) {
     Promise<Void> promise = Promise.promise();
     try {
       String hubId = hub.getHubId();
@@ -93,6 +93,8 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
       body.put(Cluster.VAR_clusterResource, clusterResource);
       body.put(Cluster.VAR_clusterName, clusterName);
       body.put(Cluster.VAR_hubCluster, hubCluster);
+      body.put(Cluster.VAR_nodesReadyTotal, Optional.ofNullable(nodesReadyResult).map(result -> result.getJsonArray("value").getString(1)).orElse("0"));
+      body.put(Cluster.VAR_nodesNotReadyTotal, Optional.ofNullable(nodesNotReadyResult).map(result -> result.getJsonArray("value").getString(1)).orElse("0"));
       body.put(Cluster.VAR_aiNodesTotal, Optional.ofNullable(aiNodeResult).map(result -> result.getJsonArray("value").getString(1)).orElse(null));
       body.put(Cluster.VAR_gpuDevicesTotal, Optional.ofNullable(gpuDeviceResult).map(result -> result.getJsonArray("value").getString(1)).orElse(null));
       body.put(Cluster.VAR_cpuCoresTotal, Optional.ofNullable(clusterCpuCoresResult).map(result -> result.getJsonArray("value").getString(1)).orElse(null));
@@ -159,6 +161,62 @@ public class ClusterEnUSApiServiceImpl extends ClusterEnUSGenApiServiceImpl {
       }).onFailure(ex -> promise.fail(ex));
     } catch(Throwable ex) {
       LOG.error(String.format("Failed to set up the auth token for fine-grained resource permissions for %s", classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  public static Future<JsonArray> queryNodesReadyTotal(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String accessToken) {
+    Promise<JsonArray> promise = Promise.promise();
+    try {
+      String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
+      Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
+      String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
+      Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
+      String promKeycloakProxyQuery = String.format("count by (cluster) (kube_node_status_condition{condition=\"Ready\", status!=\"true\"} == 0)");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
+
+      webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
+          .putHeader("Authorization", String.format("Bearer %s", accessToken))
+          .send()
+          .expecting(HttpResponseExpectation.SC_OK)
+          .onSuccess(metricsResponse -> {
+        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+      }).onFailure(ex -> {
+        LOG.error(String.format("Failed to import the %s metric for %s", promKeycloakProxyQuery, hub.getHubResource()), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  public static Future<JsonArray> queryNodesNotReadyTotal(Vertx vertx, WebClient webClient, JsonObject config, Hub hub, String classSimpleName, String accessToken) {
+    Promise<JsonArray> promise = Promise.promise();
+    try {
+      String hubIdEnv = hub.getHubId().toUpperCase().replace("-", "");
+      Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
+      String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
+      Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
+      String promKeycloakProxyQuery = String.format("count by (cluster) (kube_node_status_condition{condition=\"Ready\", status!=\"true\"} > 0)");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
+
+      webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
+          .putHeader("Authorization", String.format("Bearer %s", accessToken))
+          .send()
+          .expecting(HttpResponseExpectation.SC_OK)
+          .onSuccess(metricsResponse -> {
+        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+      }).onFailure(ex -> {
+        LOG.error(String.format("Failed to import the %s metric for %s", promKeycloakProxyQuery, hub.getHubResource()), ex);
+        promise.fail(ex);
+      });
+    } catch(Throwable ex) {
+      LOG.error(String.format(importDataFail, classSimpleName), ex);
       promise.fail(ex);
     }
     return promise.future();

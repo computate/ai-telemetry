@@ -309,9 +309,33 @@ public class Cluster extends ClusterGen<BaseModel> {
    * {@inheritDoc}
    * DocValues: true
    * Persist: true
+   * DisplayName: nodes ready total
+   * Description: The total number of ready nodes on this cluster. 
+   * HtmRowTitleOpen: cluster totals
+   * HtmRow: 5
+   * HtmCell: 1
+   * Facet: true
+   */
+  protected void _nodesReadyTotal(Wrap<Integer> w) {}
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * DisplayName: nodes not ready total
+   * Description: The total number of not ready nodes on this cluster. 
+   * HtmRow: 5
+   * HtmCell: 1
+   * Facet: true
+   */
+  protected void _nodesNotReadyTotal(Wrap<Integer> w) {}
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
    * DisplayName: AI nodes total
    * Description: The total number of AI nodes on this cluster. 
-   * HtmRowTitleOpen: cluster totals
    * HtmRow: 5
    * HtmCell: 1
    * Facet: true
@@ -438,13 +462,35 @@ public class Cluster extends ClusterGen<BaseModel> {
    *   danger: Danger
    * wa-step:
    *   start: true
-   *   end: true
    *   completed: "{{ result.statusStorage == 'success' }}"
    *   variant: "{{ result.statusStorage }}"
    * Icon: <i slot="icon" class="{{ FONTAWESOME_STYLE }} fa-{{ 'check' if result.statusStorage == 'success' else ('check' if result.statusStorage == 'neutral' else ('bell-exclamation' if result.statusStorage == 'danger' else result.statusStorage)) }}"></i>
    **/
   protected void _statusStorage(Wrap<String> w) {
     w.o((cephUsedBytes == null || cephCapacityBytes == null) ? "warning" : "neutral");
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * DisplayName: Nodes
+   * Description: {{ 'Warning, no node metrics were found. The system cannot determine the health of the nodes of this cluster. ' if (result.nodesReadyTotal is not defined or result.nodesReadyTotal == 0) else (('All ' + result.nodesReadyTotal + ' nodes healthy') if result.nodesNotReadyTotal == 0 else (result.nodesNotReadyTotal + '/' + result.nodesReadyTotal + ' nodes not ready')) }}
+   * HtmRow: 3
+   * HtmCell: 0
+   * Option:
+   *   success: Successful
+   *   neutral: Neutral
+   *   warning: Warning
+   *   danger: Danger
+   * wa-step:
+   *   end: true
+   *   completed: "{{ result.statusNodes == 'success' }}"
+   *   variant: "{{ result.statusNodes }}"
+   * Icon: <i slot="icon" class="{{ FONTAWESOME_STYLE }} fa-{{ 'check' if result.statusNodes == 'success' else ('check' if result.statusNodes == 'neutral' else ('bell-exclamation' if result.statusNodes == 'danger' else result.statusNodes)) }}"></i>
+   **/
+  protected void _statusNodes(Wrap<String> w) {
+    w.o((nodesReadyTotal == null || nodesNotReadyTotal > 0) ? "warning" : "success");
   }
 }
 
