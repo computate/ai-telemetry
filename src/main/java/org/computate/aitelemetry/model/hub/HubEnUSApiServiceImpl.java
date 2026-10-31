@@ -68,11 +68,11 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format("patchHubFuture failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("patchHubFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -85,11 +85,11 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format("postHubFuture failed. "), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     }).onFailure(ex -> {
       LOG.error(String.format("postHubFuture failed. "), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }
@@ -149,7 +149,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
                                   promise1.complete();
                                 }).onFailure(ex -> {
                                   LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
-                                  promise1.fail(ex);
+                                  promise1.tryFail(ex);
                                 });
                               }));
                             }
@@ -157,28 +157,28 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
                               promise.complete();
                             }).onFailure(ex -> {
                               LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
-                              promise.fail(ex);
+                              promise.tryFail(ex);
                             });
-                          }).onFailure(ex -> promise.fail(ex));
-                        }).onFailure(ex -> promise.fail(ex));
-                      }).onFailure(ex -> promise.fail(ex));
-                    }).onFailure(ex -> promise.fail(ex));
-                  }).onFailure(ex -> promise.fail(ex));
-                }).onFailure(ex -> promise.fail(ex));
-              }).onFailure(ex -> promise.fail(ex));
-            }).onFailure(ex -> promise.fail(ex));
-          }).onFailure(ex -> promise.fail(ex));
+                          }).onFailure(ex -> promise.tryFail(ex));
+                        }).onFailure(ex -> promise.tryFail(ex));
+                      }).onFailure(ex -> promise.tryFail(ex));
+                    }).onFailure(ex -> promise.tryFail(ex));
+                  }).onFailure(ex -> promise.tryFail(ex));
+                }).onFailure(ex -> promise.tryFail(ex));
+              }).onFailure(ex -> promise.tryFail(ex));
+            }).onFailure(ex -> promise.tryFail(ex));
+          }).onFailure(ex -> promise.tryFail(ex));
         } catch(Throwable ex) {
           LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         }
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Throwable ex) {
       LOG.error(String.format(importDataFail, Cluster.CLASS_SIMPLE_NAME), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -215,15 +215,15 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           LOG.info(String.format("Imported %s Hub", hubId));
           promise.complete();
         }).onFailure(ex -> {
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       }).onFailure(ex -> {
         LOG.error(String.format("Failed to import %s Hub", hubId));
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Exception ex) {
       LOG.error(String.format(importDataFail, classSimpleName), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -241,12 +241,12 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
           authorizeGroupData(adminToken, realmName, clientId, clientUuid, resourceName, groupName, new String[] { "GET" }, defaultScopes).onSuccess(a -> {
             LOG.info(String.format("Successfully granted %s access to %s", "GET", resourceName));
             promise.complete();
-          }).onFailure(ex -> promise.fail(ex));
-        }).onFailure(ex -> promise.fail(ex));
-      }).onFailure(ex -> promise.fail(ex));
+          }).onFailure(ex -> promise.tryFail(ex));
+        }).onFailure(ex -> promise.tryFail(ex));
+      }).onFailure(ex -> promise.tryFail(ex));
     } catch(Throwable ex) {
       LOG.error(String.format("Failed to set up the auth token for fine-grained resource permissions for %s", classSimpleName), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -263,7 +263,7 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
             promise1.complete();
           }).onFailure(ex -> {
             LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
-            promise1.fail(ex);
+            promise1.tryFail(ex);
           });
         }));
       }
@@ -271,11 +271,11 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
         promise.complete();
       }).onFailure(ex -> {
         LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       });
     } catch(Throwable ex) {
       LOG.error(String.format(importDataFail, Hub.CLASS_SIMPLE_NAME), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     }
     return promise.future();
   }
@@ -308,23 +308,23 @@ public class HubEnUSApiServiceImpl extends HubEnUSGenApiServiceImpl {
               promise.complete();
             // }).onFailure(ex -> {
             //   LOG.error(String.format(importDataFail, classSimpleName), ex);
-            //   promise.fail(ex);
+            //   promise.tryFail(ex);
             // });
           } catch(Throwable ex) {
             LOG.error(String.format(importDataFail, classSimpleName), ex);
-            promise.fail(ex);
+            promise.tryFail(ex);
           }
         }).onFailure(ex -> {
           LOG.error(String.format(importDataFail, classSimpleName), ex);
-          promise.fail(ex);
+          promise.tryFail(ex);
         });
       } catch(Throwable ex) {
         LOG.error(String.format(importDataFail, classSimpleName), ex);
-        promise.fail(ex);
+        promise.tryFail(ex);
       }
     }).onFailure(ex -> {
       LOG.error(String.format(importDataFail, classSimpleName), ex);
-      promise.fail(ex);
+      promise.tryFail(ex);
     });
     return promise.future();
   }

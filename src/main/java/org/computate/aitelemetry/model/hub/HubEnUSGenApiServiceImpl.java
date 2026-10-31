@@ -3173,36 +3173,6 @@ public class HubEnUSGenApiServiceImpl extends BaseApiServiceImpl implements HubE
         String localClusterName = Optional.ofNullable(Optional.ofNullable(new_localClusterName).orElse(old_localClusterName)).orElse(null);
         // if(!Objects.equals(old_localClusterName, localClusterName))
           // json.put(Hub.varJson(Hub.VAR_localClusterName, patch), localClusterName);
-        String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
-        // if(!Objects.equals(old_created, created))
-          // json.put(Hub.varJson(Hub.VAR_created, patch), created);
-        Boolean archived = Optional.ofNullable(Optional.ofNullable(new_archived).orElse(old_archived)).orElse(null);
-        // if(!Objects.equals(old_archived, archived))
-          // json.put(Hub.varJson(Hub.VAR_archived, patch), archived);
-        String sessionId = Optional.ofNullable(Optional.ofNullable(new_sessionId).orElse(old_sessionId)).orElse(null);
-        // if(!Objects.equals(old_sessionId, sessionId))
-          // json.put(Hub.varJson(Hub.VAR_sessionId, patch), sessionId);
-        String userKey = Optional.ofNullable(Optional.ofNullable(new_userKey).orElse(old_userKey)).orElse(null);
-        // if(!Objects.equals(old_userKey, userKey))
-          // json.put(Hub.varJson(Hub.VAR_userKey, patch), userKey);
-        String objectTitle = Optional.ofNullable(Optional.ofNullable(new_objectTitle).orElse(old_objectTitle)).orElse(null);
-        // if(!Objects.equals(old_objectTitle, objectTitle))
-          // json.put(Hub.varJson(Hub.VAR_objectTitle, patch), objectTitle);
-        String apiUrl = Optional.ofNullable(Optional.ofNullable(new_apiUrl).orElse(old_apiUrl)).orElse(null);
-        // if(!Objects.equals(old_apiUrl, apiUrl))
-          // json.put(Hub.varJson(Hub.VAR_apiUrl, patch), apiUrl);
-        String displayPage = Optional.ofNullable(Optional.ofNullable(new_displayPage).orElse(old_displayPage)).orElse(null);
-        // if(!Objects.equals(old_displayPage, displayPage))
-          // json.put(Hub.varJson(Hub.VAR_displayPage, patch), displayPage);
-        String editPage = Optional.ofNullable(Optional.ofNullable(new_editPage).orElse(old_editPage)).orElse(null);
-        // if(!Objects.equals(old_editPage, editPage))
-          // json.put(Hub.varJson(Hub.VAR_editPage, patch), editPage);
-        String userPage = Optional.ofNullable(Optional.ofNullable(new_userPage).orElse(old_userPage)).orElse(null);
-        // if(!Objects.equals(old_userPage, userPage))
-          // json.put(Hub.varJson(Hub.VAR_userPage, patch), userPage);
-        String download = Optional.ofNullable(Optional.ofNullable(new_download).orElse(old_download)).orElse(null);
-        // if(!Objects.equals(old_download, download))
-          // json.put(Hub.varJson(Hub.VAR_download, patch), download);
 
         promise.complete(json);
       }

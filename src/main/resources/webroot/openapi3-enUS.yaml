@@ -12656,7 +12656,7 @@ paths:
             type: array
             items:
               type: string
-            default: ["hubId", "clusterName"]
+            default: ["hubId", "clusterName", "defaultOpenShiftProject", "defaultOpsProject"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -13220,7 +13220,7 @@ paths:
             type: array
             items:
               type: string
-            default: ["hubId", "clusterName"]
+            default: ["hubId", "clusterName", "defaultOpenShiftProject", "defaultOpsProject"]
       responses:
         '200':
           description: >+
@@ -13369,7 +13369,7 @@ paths:
             type: array
             items:
               type: string
-            default: ["hubId", "clusterName"]
+            default: ["hubId", "clusterName", "defaultOpenShiftProject", "defaultOpsProject"]
         - in: query
           name: d
           description: 'The radial distance, usually in kilometers. '
@@ -26264,6 +26264,10 @@ components:
                     type: string
                   projectFieldOfScience:
                     type: string
+                  defaultOpenShiftProject:
+                    type: boolean
+                  defaultOpsProject:
+                    type: boolean
                   projectActive:
                     type: boolean
                   gpuEnabled:
@@ -26388,6 +26392,20 @@ components:
               type: string
             removeAllProjectFieldOfScience:
               type: string
+            setDefaultOpenShiftProject:
+              type: boolean
+              nullable: true
+            removeDefaultOpenShiftProject:
+              type: boolean
+            removeAllDefaultOpenShiftProject:
+              type: boolean
+            setDefaultOpsProject:
+              type: boolean
+              nullable: true
+            removeDefaultOpsProject:
+              type: boolean
+            removeAllDefaultOpsProject:
+              type: boolean
             setProjectActive:
               type: boolean
               nullable: true
@@ -26614,6 +26632,20 @@ components:
               type: string
             removeAllProjectFieldOfScience:
               type: string
+            setDefaultOpenShiftProject:
+              type: boolean
+              nullable: true
+            removeDefaultOpenShiftProject:
+              type: boolean
+            removeAllDefaultOpenShiftProject:
+              type: boolean
+            setDefaultOpsProject:
+              type: boolean
+              nullable: true
+            removeDefaultOpsProject:
+              type: boolean
+            removeAllDefaultOpsProject:
+              type: boolean
             setProjectActive:
               type: boolean
               nullable: true
@@ -26780,6 +26812,10 @@ components:
               type: string
             projectFieldOfScience:
               type: string
+            defaultOpenShiftProject:
+              type: boolean
+            defaultOpsProject:
+              type: boolean
             projectActive:
               type: boolean
             gpuEnabled:
@@ -26844,6 +26880,10 @@ components:
               type: string
             projectFieldOfScience:
               type: string
+            defaultOpenShiftProject:
+              type: boolean
+            defaultOpsProject:
+              type: boolean
             projectActive:
               type: boolean
             gpuEnabled:
@@ -26908,6 +26948,10 @@ components:
               type: string
             projectFieldOfScience:
               type: string
+            defaultOpenShiftProject:
+              type: boolean
+            defaultOpsProject:
+              type: boolean
             projectActive:
               type: boolean
             gpuEnabled:
@@ -26977,6 +27021,10 @@ components:
                     type: string
                   projectFieldOfScience:
                     type: string
+                  defaultOpenShiftProject:
+                    type: boolean
+                  defaultOpsProject:
+                    type: boolean
                   projectActive:
                     type: boolean
                   gpuEnabled:
@@ -27041,6 +27089,10 @@ components:
                     type: string
                   projectFieldOfScience:
                     type: string
+                  defaultOpenShiftProject:
+                    type: boolean
+                  defaultOpsProject:
+                    type: boolean
                   projectActive:
                     type: boolean
                   gpuEnabled:
@@ -27105,6 +27157,10 @@ components:
               type: string
             projectFieldOfScience:
               type: string
+            defaultOpenShiftProject:
+              type: boolean
+            defaultOpsProject:
+              type: boolean
             projectActive:
               type: boolean
             gpuEnabled:
@@ -27169,6 +27225,10 @@ components:
               type: string
             projectFieldOfScience:
               type: string
+            defaultOpenShiftProject:
+              type: boolean
+            defaultOpsProject:
+              type: boolean
             projectActive:
               type: boolean
             gpuEnabled:

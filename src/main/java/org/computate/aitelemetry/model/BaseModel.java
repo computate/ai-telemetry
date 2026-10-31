@@ -48,7 +48,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * DisplayName.enUS: primary key
    * Description: The primary key of this object in the database
    * Facet: true
-   * StringFormat: null
+   * UpsertFormat: null
    */
   protected void _pk(Wrap<Long> w) {}
 
@@ -66,7 +66,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * FormatHtm: MMM d, yyyy h:mm:ss a
    * Description: A created timestamp for this record in the database
    * Facet: true
-   * StringFormat: null
+   * UpsertFormat: null
    */
   protected void _created(Wrap<ZonedDateTime> w) {}
 
@@ -82,7 +82,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * DisplayName.enUS: modified
    * Description: A modified timestamp for this record in the database
    * Facet: true
-   * StringFormat: ZonedDateTime.now(ZoneId.of(siteRequest_.getConfig().getString(ConfigKeys.SITE_ZONE)))
+   * UpsertFormat: ZonedDateTime.now(ZoneId.of(siteRequest_.getConfig().getString(ConfigKeys.SITE_ZONE)))
    */
   protected void _modified(Wrap<ZonedDateTime> w) {
   }
@@ -98,7 +98,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * HidePATCH: true
    * DisplayName.enUS: archive
    * Description: For archiving this record
-   * StringFormat: null
+   * UpsertFormat: null
    */
   protected void _archived(Wrap<Boolean> w) {
     w.o(false);
@@ -143,7 +143,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Modify: false
    * Description: The session ID of the user that created this object
    * Ignore: true
-   * StringFormat: null
+   * UpsertFormat: null
    * VarSessionId: true
    */
   protected void _sessionId(Wrap<String> w) {
@@ -155,7 +155,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Persist: true
    * Modify: false
    * Description: The primary key of the user that created this record
-   * StringFormat: null
+   * UpsertFormat: null
    */
   protected void _userKey(Wrap<Long> c) {
   }
@@ -192,7 +192,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * DisplayName: title
    * Description: The title of this page. 
    * VarTitle: true
-   * StringFormat: null
+   * UpsertFormat: null
    */
   protected void _objectTitle(Wrap<String> w) {
     w.o(String.format("%s — %s", classNameAdjectiveSingularForClass(), nameForClass()));
@@ -207,7 +207,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Description: The API URL for this. 
    * Link: true
    * VarUrlApi: true
-   * StringFormat: null
+   * UpsertFormat: null
    */
   protected void _apiUrl(Wrap<String> w) {
     String f = enUSStringFormatUrlApiForClass();
@@ -225,7 +225,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Description: Visit this landing page. 
    * Link: true
    * VarUrlDisplayPage: true
-   * StringFormat: null
+   * UpsertFormat: null
    */
   protected void _displayPage(Wrap<String> w) {
     String f = enUSStringFormatUrlDisplayPageForClass();
@@ -249,7 +249,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Link: true
    * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-pen-to-square"></i>
    * VarUrlEditPage: true
-   * StringFormat: null
+   * UpsertFormat: null
    */
   protected void _editPage(Wrap<String> w) {
     String f = enUSStringFormatUrlEditPageForClass();
@@ -266,7 +266,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Description: User page
    * Link: true
    * VarUrlUserPage: true
-   * StringFormat: null
+   * UpsertFormat: null
    */
   protected void _userPage(Wrap<String> w) {
     String f = enUSStringFormatUrlUserPageForClass();
@@ -283,7 +283,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Description: the download URL
    * Link: true
    * VarUrlDownload: true
-   * StringFormat: null
+   * UpsertFormat: null
    */
   protected void _download(Wrap<String> w) {
     String f = enUSStringFormatUrlDownloadForClass();

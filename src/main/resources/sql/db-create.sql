@@ -207,6 +207,8 @@ ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectResource text UNIQUE;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectTitle text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS description text;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectFieldOfScience text;
+ALTER TABLE Project ADD COLUMN IF NOT EXISTS defaultOpenShiftProject boolean;
+ALTER TABLE Project ADD COLUMN IF NOT EXISTS defaultOpsProject boolean;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS projectActive boolean;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS gpuEnabled boolean;
 ALTER TABLE Project ADD COLUMN IF NOT EXISTS vllmEnabled boolean;

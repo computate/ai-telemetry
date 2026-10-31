@@ -301,7 +301,7 @@ ZOOKEEPER_NAMESPACE: "{{ lookup('env', 'ZOOKEEPER_NAMESPACE') | default('zookeep
 ZOOKEEPER_HOST_NAME: "{{ lookup('env', 'ZOOKEEPER_HOST_NAME') | default('console-openshift-console.' + OPENSHIFT_APPS_DOMAIN, true) }}"
 # The default port that Zookeeper runs to manage the cluster. 
 ZOOKEEPER_PORT: "{{ lookup('env', 'ZOOKEEPER_PORT') | default('30081', true) }}"
-ZOOKEEPER_MAX_RETRIES: 100
+ZOOKEEPER_MAX_RETRIES: 10
 ZOOKEEPER_BASE_SLEEP_TIME_MILLIS: 5000
 ZOOKEEPER_MAX_SLEEP_MILLIS: 5000
 ZOOKEEPER_CONNECTION_TIMEOUT_MILLIS: 3000

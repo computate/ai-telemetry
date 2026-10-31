@@ -1113,6 +1113,22 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
               num++;
               bParams.add(o2.sqlProjectFieldOfScience());
             break;
+          case "setDefaultOpenShiftProject":
+              o2.setDefaultOpenShiftProject(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_defaultOpenShiftProject + "=$" + num);
+              num++;
+              bParams.add(o2.sqlDefaultOpenShiftProject());
+            break;
+          case "setDefaultOpsProject":
+              o2.setDefaultOpsProject(jsonObject.getString(entityVar));
+              if(bParams.size() > 0)
+                bSql.append(", ");
+              bSql.append(Project.VAR_defaultOpsProject + "=$" + num);
+              num++;
+              bParams.add(o2.sqlDefaultOpsProject());
+            break;
           case "setProjectActive":
               o2.setProjectActive(jsonObject.getString(entityVar));
               if(bParams.size() > 0)
@@ -1730,6 +1746,24 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
             bSql.append(Project.VAR_projectFieldOfScience + "=$" + num);
             num++;
             bParams.add(o2.sqlProjectFieldOfScience());
+            break;
+          case Project.VAR_defaultOpenShiftProject:
+            o2.setDefaultOpenShiftProject(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_defaultOpenShiftProject + "=$" + num);
+            num++;
+            bParams.add(o2.sqlDefaultOpenShiftProject());
+            break;
+          case Project.VAR_defaultOpsProject:
+            o2.setDefaultOpsProject(jsonObject.getString(entityVar));
+            if(bParams.size() > 0) {
+              bSql.append(", ");
+            }
+            bSql.append(Project.VAR_defaultOpsProject + "=$" + num);
+            num++;
+            bParams.add(o2.sqlDefaultOpsProject());
             break;
           case Project.VAR_projectActive:
             o2.setProjectActive(jsonObject.getString(entityVar));
@@ -3809,6 +3843,8 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
         }
       }
       if("*:*".equals(searchList.getQuery()) && searchList.getSorts().size() == 0) {
+        searchList.sort("defaultOpenShiftProject_docvalues_boolean", "asc");
+        searchList.sort("defaultOpsProject_docvalues_boolean", "asc");
         searchList.sort("hubId_docvalues_string", "asc");
         searchList.sort("clusterName_docvalues_string", "asc");
         searchList.sort("projectName_docvalues_string", "asc");
@@ -3951,6 +3987,12 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                                       String old_projectFieldOfScience = Project.staticJsonProjectFieldOfScience(o.getProjectFieldOfScience());
                                       String new_projectFieldOfScience = json.getString(Project.varJson(Project.VAR_projectFieldOfScience, patch));
 
+                                      Boolean old_defaultOpenShiftProject = Project.staticJsonDefaultOpenShiftProject(o.getDefaultOpenShiftProject());
+                                      Boolean new_defaultOpenShiftProject = json.getBoolean(Project.varJson(Project.VAR_defaultOpenShiftProject, patch));
+
+                                      Boolean old_defaultOpsProject = Project.staticJsonDefaultOpsProject(o.getDefaultOpsProject());
+                                      Boolean new_defaultOpsProject = json.getBoolean(Project.varJson(Project.VAR_defaultOpsProject, patch));
+
                                       Boolean old_projectActive = Project.staticJsonProjectActive(o.getProjectActive());
                                       Boolean new_projectActive = json.getBoolean(Project.varJson(Project.VAR_projectActive, patch));
 
@@ -4038,6 +4080,12 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                                       String projectFieldOfScience = Optional.ofNullable(Optional.ofNullable(new_projectFieldOfScience).orElse(old_projectFieldOfScience)).orElse(null);
                                       // if(!Objects.equals(old_projectFieldOfScience, projectFieldOfScience))
                                         // json.put(Project.varJson(Project.VAR_projectFieldOfScience, patch), projectFieldOfScience);
+                                      Boolean defaultOpenShiftProject = Optional.ofNullable(Optional.ofNullable(new_defaultOpenShiftProject).orElse(old_defaultOpenShiftProject)).orElse(null);
+                                      // if(!Objects.equals(old_defaultOpenShiftProject, defaultOpenShiftProject))
+                                        // json.put(Project.varJson(Project.VAR_defaultOpenShiftProject, patch), defaultOpenShiftProject);
+                                      Boolean defaultOpsProject = Optional.ofNullable(Optional.ofNullable(new_defaultOpsProject).orElse(old_defaultOpsProject)).orElse(null);
+                                      // if(!Objects.equals(old_defaultOpsProject, defaultOpsProject))
+                                        // json.put(Project.varJson(Project.VAR_defaultOpsProject, patch), defaultOpsProject);
                                       Boolean projectActive = Optional.ofNullable(Optional.ofNullable(new_projectActive).orElse(old_projectActive)).orElse(null);
                                       // if(!Objects.equals(old_projectActive, projectActive))
                                         // json.put(Project.varJson(Project.VAR_projectActive, patch), projectActive);
@@ -4071,36 +4119,6 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
                                       String statusPageTemplateUri = Optional.ofNullable(Optional.ofNullable(new_statusPageTemplateUri).orElse(old_statusPageTemplateUri)).orElse(null);
                                       // if(!Objects.equals(old_statusPageTemplateUri, statusPageTemplateUri))
                                         // json.put(Project.varJson(Project.VAR_statusPageTemplateUri, patch), statusPageTemplateUri);
-                                      String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
-                                      // if(!Objects.equals(old_created, created))
-                                        // json.put(Project.varJson(Project.VAR_created, patch), created);
-                                      Boolean archived = Optional.ofNullable(Optional.ofNullable(new_archived).orElse(old_archived)).orElse(null);
-                                      // if(!Objects.equals(old_archived, archived))
-                                        // json.put(Project.varJson(Project.VAR_archived, patch), archived);
-                                      String sessionId = Optional.ofNullable(Optional.ofNullable(new_sessionId).orElse(old_sessionId)).orElse(null);
-                                      // if(!Objects.equals(old_sessionId, sessionId))
-                                        // json.put(Project.varJson(Project.VAR_sessionId, patch), sessionId);
-                                      String userKey = Optional.ofNullable(Optional.ofNullable(new_userKey).orElse(old_userKey)).orElse(null);
-                                      // if(!Objects.equals(old_userKey, userKey))
-                                        // json.put(Project.varJson(Project.VAR_userKey, patch), userKey);
-                                      String objectTitle = Optional.ofNullable(Optional.ofNullable(new_objectTitle).orElse(old_objectTitle)).orElse(null);
-                                      // if(!Objects.equals(old_objectTitle, objectTitle))
-                                        // json.put(Project.varJson(Project.VAR_objectTitle, patch), objectTitle);
-                                      String apiUrl = Optional.ofNullable(Optional.ofNullable(new_apiUrl).orElse(old_apiUrl)).orElse(null);
-                                      // if(!Objects.equals(old_apiUrl, apiUrl))
-                                        // json.put(Project.varJson(Project.VAR_apiUrl, patch), apiUrl);
-                                      String displayPage = Optional.ofNullable(Optional.ofNullable(new_displayPage).orElse(old_displayPage)).orElse(null);
-                                      // if(!Objects.equals(old_displayPage, displayPage))
-                                        // json.put(Project.varJson(Project.VAR_displayPage, patch), displayPage);
-                                      String editPage = Optional.ofNullable(Optional.ofNullable(new_editPage).orElse(old_editPage)).orElse(null);
-                                      // if(!Objects.equals(old_editPage, editPage))
-                                        // json.put(Project.varJson(Project.VAR_editPage, patch), editPage);
-                                      String userPage = Optional.ofNullable(Optional.ofNullable(new_userPage).orElse(old_userPage)).orElse(null);
-                                      // if(!Objects.equals(old_userPage, userPage))
-                                        // json.put(Project.varJson(Project.VAR_userPage, patch), userPage);
-                                      String download = Optional.ofNullable(Optional.ofNullable(new_download).orElse(old_download)).orElse(null);
-                                      // if(!Objects.equals(old_download, download))
-                                        // json.put(Project.varJson(Project.VAR_download, patch), download);
 
                                       promise.complete(json);
                                     }
@@ -4159,7 +4177,7 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       SiteRequest siteRequest = o.getSiteRequest_();
       SqlConnection sqlConnection = siteRequest.getSqlConnection();
       Long pk = o.getPk();
-      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, hubId, hubResource, clusterName, clusterResource, projectName, projectResource, projectTitle, description, projectFieldOfScience, projectActive, gpuEnabled, vllmEnabled, podRestartCount, podsRestarting, podTerminatingCount, podsTerminating, fullPvcsCount, fullPvcs, namespaceTerminating, statusPageTemplateUri, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
+      sqlConnection.preparedQuery("SELECT tenantResource, localClusterName, hubId, hubResource, clusterName, clusterResource, projectName, projectResource, projectTitle, description, projectFieldOfScience, defaultOpenShiftProject, defaultOpsProject, projectActive, gpuEnabled, vllmEnabled, podRestartCount, podsRestarting, podTerminatingCount, podsTerminating, fullPvcsCount, fullPvcs, namespaceTerminating, statusPageTemplateUri, created, archived, sessionId, userKey, objectTitle, apiUrl, displayPage, editPage, userPage, download FROM Project WHERE pk=$1")
           .collecting(Collectors.toList())
           .execute(Tuple.of(pk)
           ).onSuccess(result -> {
@@ -4509,6 +4527,8 @@ public class ProjectEnUSGenApiServiceImpl extends BaseApiServiceImpl implements 
       o.persistForClass(Project.VAR_projectTitle, Project.staticSetProjectTitle(siteRequest2, (String)result.get(Project.VAR_projectTitle)));
       o.persistForClass(Project.VAR_description, Project.staticSetDescription(siteRequest2, (String)result.get(Project.VAR_description)));
       o.persistForClass(Project.VAR_projectFieldOfScience, Project.staticSetProjectFieldOfScience(siteRequest2, (String)result.get(Project.VAR_projectFieldOfScience)));
+      o.persistForClass(Project.VAR_defaultOpenShiftProject, Project.staticSetDefaultOpenShiftProject(siteRequest2, (String)result.get(Project.VAR_defaultOpenShiftProject)));
+      o.persistForClass(Project.VAR_defaultOpsProject, Project.staticSetDefaultOpsProject(siteRequest2, (String)result.get(Project.VAR_defaultOpsProject)));
       o.persistForClass(Project.VAR_projectActive, Project.staticSetProjectActive(siteRequest2, (String)result.get(Project.VAR_projectActive)));
       o.persistForClass(Project.VAR_gpuEnabled, Project.staticSetGpuEnabled(siteRequest2, (String)result.get(Project.VAR_gpuEnabled)));
       o.persistForClass(Project.VAR_vllmEnabled, Project.staticSetVllmEnabled(siteRequest2, (String)result.get(Project.VAR_vllmEnabled)));

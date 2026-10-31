@@ -26,6 +26,8 @@ import io.vertx.pgclient.data.Polygon;
  * AName: an project
  * PluralName: projects
  * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-people-line"></i>
+ * Sort.asc: defaultOpenShiftProject
+ * Sort.asc: defaultOpsProject
  * Sort.asc: hubId
  * Sort.asc: clusterName
  * Sort.asc: projectName
@@ -166,6 +168,8 @@ public class Project extends ProjectGen<BaseModel> {
    * Facet: true
    * AuthorizationResource: PROJECT
    * VarId: true
+   * Facet: true
+   * DefaultFacet: true
    **/
   protected void _projectResource(Wrap<String> w) {
     w.o(String.format("%s-%s-%s-%s-%s-%s", Hub.CLASS_AUTH_RESOURCE, hubId, Cluster.CLASS_AUTH_RESOURCE, clusterName, Project.CLASS_AUTH_RESOURCE, projectName));
@@ -223,6 +227,38 @@ public class Project extends ProjectGen<BaseModel> {
    * Facet: true
    **/
   protected void _projectFieldOfScience(Wrap<String> w) {}
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
+   * DisplayName: K8S
+   * Description: Whether the project is a default OpenShift project. 
+   * HtmRow: 3
+   * HtmCell: 10
+   * DefaultFacet: true
+   * HtmColumn: 5
+   **/
+  protected void _defaultOpenShiftProject(Wrap<Boolean> w) {
+    w.o(false);
+  }
+
+  /**
+   * {@inheritDoc}
+   * DocValues: true
+   * Persist: true
+   * Facet: true
+   * DisplayName: Ops
+   * Description: Whether the project is a default Operations project. 
+   * HtmRow: 3
+   * HtmCell: 10
+   * DefaultFacet: true
+   * HtmColumn: 6
+   **/
+  protected void _defaultOpsProject(Wrap<Boolean> w) {
+    w.o(false);
+  }
 
   /**
    * {@inheritDoc}

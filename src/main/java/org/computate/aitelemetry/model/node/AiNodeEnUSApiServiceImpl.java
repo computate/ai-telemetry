@@ -18,11 +18,13 @@ import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.http.HttpResponseExpectation;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.authentication.UsernamePasswordCredentials;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 
 /**
@@ -149,22 +151,34 @@ public class AiNodeEnUSApiServiceImpl extends AiNodeEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=gpu_operator_gpu_nodes_total");
+      String promKeycloakProxyQuery = String.format("gpu_operator_gpu_nodes_total");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
           .send()
-          .expecting(HttpResponseExpectation.SC_OK)
-          .onSuccess(metricsResponse -> {
-        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          .onComplete(metricsComplete -> {
+        try {
+          HttpResponse<Buffer> metricsResponse;
+          if(metricsComplete.succeeded()) {
+            metricsResponse = metricsComplete.result();
+            JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+            promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          } else {
+            LOG.error(String.format("Failed to import the %s metric for %s. %s Error: %s. ", promKeycloakProxyQuery, hub.getHubResource(), Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+            promise.complete(new JsonArray());
+          }
+        } catch(Throwable ex) {
+          LOG.error(String.format(importDataFail, classSimpleName));
+          promise.complete(new JsonArray());
+        }
       }).onFailure(ex -> {
-        LOG.error(String.format(importDataFail, classSimpleName), ex);
-        promise.fail(ex);
+        LOG.error(String.format("Failed to import the %s metric for %s", promKeycloakProxyQuery, hub.getHubResource()));
+        promise.complete(new JsonArray());
       });
     } catch(Throwable ex) {
-      LOG.error(String.format(importDataFail, classSimpleName), ex);
-      promise.fail(ex);
+      LOG.error(String.format(importDataFail, classSimpleName));
+      promise.complete(new JsonArray());
     }
     return promise.future();
   }

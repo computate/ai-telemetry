@@ -93,7 +93,6 @@ import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import io.vertx.ext.web.openapi.RouterBuilder;
-import io.vertx.ext.web.sstore.LocalSessionStore;
 import io.vertx.ext.web.sstore.ClusteredSessionStore;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
@@ -235,63 +234,369 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
    * The main method for the Vert.x application that runs the Vert.x Runner class
    **/
   public static void  main(String[] args) {
-    Vertx vertx = Vertx.vertx();
     String configVarsPath = System.getenv(ConfigKeys.VARS_PATH);
-    configureConfig(vertx).onSuccess(config -> {
-      try {
-        Future<Void> originalFuture = Future.future(a -> a.complete());
-        Future<Void> future = originalFuture;
-        Boolean sslVerify = Boolean.valueOf(config.getString(ConfigKeys.SSL_VERIFY));
-        WebClient webClient = WebClient.create(vertx, new WebClientOptions().setVerifyHost(sslVerify).setTrustAll(!sslVerify));
-        Boolean runOpenApi3Generator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_OPENAPI3_GENERATOR))).orElse(false);
-        Boolean runSqlGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_SQL_GENERATOR))).orElse(false);
-        Boolean runAuthorizationGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_AUTHORIZATION_GENERATOR))).orElse(false);
-        Boolean runFiwareGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_FIWARE_GENERATOR))).orElse(false);
-        Boolean runProjectGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_PROJECT_GENERATOR))).orElse(false);
+    if(configVarsPath == null)
+      runEnv();
+    else
+      runVars(configVarsPath);
+  }
 
-        if(runOpenApi3Generator || runSqlGenerator || runFiwareGenerator || runProjectGenerator) {
-          SiteRequest siteRequest = new SiteRequest();
-          siteRequest.setConfig(config);
-          siteRequest.setWebClient(webClient);
-          siteRequest.initDeepSiteRequest();
-          OpenApi3Generator api = new OpenApi3Generator();
-          api.setVertx_(vertx);
-          api.setWebClient(webClient);
-          api.setConfig(config);
-          api.initDeepOpenApi3Generator(siteRequest);
-          if(runOpenApi3Generator)
-            future = future.compose(a -> api.writeOpenApi());
-          if(runSqlGenerator) {
-            future = future.compose(a -> api.writeSql());
-            future = future.compose(a -> configureDatabaseSchema(vertx, config));
-          }
-          if(runAuthorizationGenerator)
-            future = future.compose(a -> authorizeData(vertx, config, webClient));
-          if(runFiwareGenerator)
-            future = future.compose(a -> api.writeFiware());
-          if(runProjectGenerator)
-            future = future.compose(a -> api.writeProject());
-          future.onComplete(a -> {
-            vertx.close();
-            System.exit(0);
-          });
-        } else {
-          future = future.compose(a -> run(config).onSuccess(b -> {
-            LOG.info("MainVerticle run completed");
-          }).onFailure(ex -> {
-            LOG.info("MainVerticle run failed");
-            vertx.close();
-            System.exit(0);
-          }));
+  public static Future<Void> runDecision(Vertx vertx, JsonObject config) {
+    Promise<Void> promise = Promise.promise();
+    try {
+      Future<Void> originalFuture = Future.future(a -> a.complete());
+      Future<Void> future = originalFuture;
+      Boolean sslVerify = Boolean.valueOf(config.getString(ConfigKeys.SSL_VERIFY));
+      WebClient webClient = WebClient.create(vertx, new WebClientOptions().setVerifyHost(sslVerify).setTrustAll(!sslVerify));
+      Boolean runOpenApi3Generator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_OPENAPI3_GENERATOR))).orElse(false);
+      Boolean runSqlGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_SQL_GENERATOR))).orElse(false);
+      Boolean runAuthorizationGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_AUTHORIZATION_GENERATOR))).orElse(false);
+      Boolean runFiwareGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_FIWARE_GENERATOR))).orElse(false);
+      Boolean runProjectGenerator = Optional.ofNullable(Boolean.valueOf(config.getString(ConfigKeys.RUN_PROJECT_GENERATOR))).orElse(false);
+
+      if(runOpenApi3Generator || runSqlGenerator || runFiwareGenerator || runProjectGenerator) {
+        SiteRequest siteRequest = new SiteRequest();
+        siteRequest.setConfig(config);
+        siteRequest.setWebClient(webClient);
+        siteRequest.initDeepSiteRequest();
+        OpenApi3Generator api = new OpenApi3Generator();
+        api.setVertx_(vertx);
+        api.setWebClient(webClient);
+        api.setConfig(config);
+        api.initDeepOpenApi3Generator(siteRequest);
+        if(runOpenApi3Generator)
+          future = future.compose(a -> api.writeOpenApi());
+        if(runSqlGenerator) {
+          future = future.compose(a -> api.writeSql());
+          future = future.compose(a -> configureDatabaseSchema(vertx, config));
         }
-      } catch(Exception ex) {
-        LOG.error(String.format("Error loading config: %s", configVarsPath), ex);
-        vertx.close();
+        if(runAuthorizationGenerator)
+          future = future.compose(a -> authorizeData(vertx, config, webClient));
+        if(runFiwareGenerator)
+          future = future.compose(a -> api.writeFiware());
+        if(runProjectGenerator)
+          future = future.compose(a -> api.writeProject());
+        future.onComplete(a -> {
+          vertx.close();
+          System.exit(0);
+        });
+      } else {
+        promise.complete();
       }
-    }).onFailure(ex -> {
-      LOG.error(String.format("Error loading config: %s", configVarsPath), ex);
-      vertx.close();
-    });
+    } catch (Throwable ex) {
+      LOG.error("Creating Vertx failed. ", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
+  }
+
+  public static void runVars(String configVarsPath) {
+    try {
+      Jinjava jinjava = ComputateConfigKeys.getJinjava();
+      JsonObject config = ComputateConfigKeys.getConfig(jinjava);
+      ConfigStoreOptions configOptions = new ConfigStoreOptions().setType("json").setConfig(config);
+      ConfigRetrieverOptions retrieverOptions = new ConfigRetrieverOptions();
+      retrieverOptions.addStore(configOptions);
+      Boolean enableZookeeperCluster = Boolean.valueOf(config.getString(ConfigKeys.ENABLE_ZOOKEEPER_CLUSTER));
+      VertxOptions vertxOptions = new VertxOptions();
+      EventBusOptions eventBusOptions = new EventBusOptions();
+      ClusterManager clusterManager = null;
+
+      ConfigStoreOptions storeEnv = new ConfigStoreOptions().setType("env");
+      retrieverOptions.addStore(storeEnv);
+
+      if(enableZookeeperCluster) {
+        JsonObject zkConfig = new JsonObject();
+        String zookeeperHostName = config.getString(ConfigKeys.ZOOKEEPER_HOST_NAME);
+        Integer zookeeperPort = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_PORT));
+        String zookeeperHosts = Optional.ofNullable(config.getString(ConfigKeys.ZOOKEEPER_HOSTS)).orElse(zookeeperHostName + ":" + zookeeperPort);
+        String clusterHostName = config.getString(ConfigKeys.CLUSTER_HOST_NAME);
+        Integer clusterPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PORT));
+        String clusterPublicHostName = config.getString(ConfigKeys.CLUSTER_PUBLIC_HOST_NAME);
+        Integer clusterPublicPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PUBLIC_PORT));
+        String zookeeperRetryPolicy = config.getString(ConfigKeys.ZOOKEEPER_RETRY_POLICY);
+        Integer zookeeperBaseSleepTimeMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_BASE_SLEEP_TIME_MILLIS));
+        Integer zookeeperMaxSleepMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_MAX_SLEEP_MILLIS));
+        Integer zookeeperMaxRetries = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_MAX_RETRIES));
+        Integer zookeeperConnectionTimeoutMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_CONNECTION_TIMEOUT_MILLIS));
+        Integer zookeeperSessionTimeoutMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_SESSION_TIMEOUT_MILLIS));
+        zkConfig.put("zookeeperHosts", zookeeperHosts);
+        zkConfig.put("sessionTimeout", zookeeperSessionTimeoutMillis);
+        zkConfig.put("connectTimeout", zookeeperConnectionTimeoutMillis);
+        zkConfig.put("rootPath", config.getString(ConfigKeys.ZOOKEEPER_ROOT_PATH));
+        zkConfig.put("retry", new JsonObject()
+            .put("policy", zookeeperRetryPolicy)
+            .put("initialSleepTime", zookeeperBaseSleepTimeMillis)
+            .put("intervalTimes", zookeeperMaxSleepMillis)
+            .put("maxTimes", zookeeperMaxRetries)
+        );
+        clusterManager = new ZookeeperClusterManager(zkConfig);
+  
+        if(clusterHostName != null) {
+          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_HOST_NAME, clusterHostName));
+          eventBusOptions.setHost(clusterHostName);
+        }
+        if(clusterPort != null) {
+          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PORT, clusterPort));
+          eventBusOptions.setPort(clusterPort);
+        }
+        if(clusterPublicHostName != null) {
+          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PUBLIC_HOST_NAME, clusterPublicHostName));
+          eventBusOptions.setClusterPublicHost(clusterPublicHostName);
+        }
+        if(clusterPublicPort != null) {
+          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PUBLIC_PORT, clusterPublicPort));
+          eventBusOptions.setClusterPublicPort(clusterPublicPort);
+        }
+      }
+      Long vertxWarningExceptionSeconds = config.getLong(ConfigKeys.VERTX_WARNING_EXCEPTION_SECONDS);
+      Long vertxMaxEventLoopExecuteTime = config.getLong(ConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME);
+      Long vertxMaxWorkerExecuteTime = config.getLong(ConfigKeys.VERTX_MAX_WORKER_EXECUTE_TIME);
+      vertxOptions.setEventBusOptions(eventBusOptions);
+      vertxOptions.setWarningExceptionTime(vertxWarningExceptionSeconds);
+      vertxOptions.setWarningExceptionTimeUnit(TimeUnit.SECONDS);
+      vertxOptions.setMaxEventLoopExecuteTime(vertxMaxEventLoopExecuteTime);
+      vertxOptions.setMaxEventLoopExecuteTimeUnit(TimeUnit.SECONDS);
+      vertxOptions.setMaxWorkerExecuteTime(vertxMaxWorkerExecuteTime);
+      vertxOptions.setMaxWorkerExecuteTimeUnit(TimeUnit.SECONDS);
+      vertxOptions.setWorkerPoolSize(Integer.parseInt(config.getString(ConfigKeys.WORKER_POOL_SIZE)));
+
+      SdkTracerProvider sdkTracerProvider = Boolean.valueOf(config.getString(ConfigKeys.ENABLE_OPEN_TELEMETRY)) ? 
+          SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(OtlpHttpSpanExporter.builder().build())).build() : null;
+      SdkMeterProvider sdkMeterProvider = Boolean.valueOf(config.getString(ConfigKeys.ENABLE_OPEN_TELEMETRY)) ? 
+          SdkMeterProvider.builder().build() : null;
+  
+      if(enableZookeeperCluster) {
+        VertxBuilder vertxBuilder = Vertx.builder();
+        vertxBuilder.with(vertxOptions);
+        vertxBuilder.withClusterManager(clusterManager);
+        if(Boolean.valueOf(config.getString(ConfigKeys.ENABLE_OPEN_TELEMETRY))) {
+          // Switch oc config current-context to your other cluster to port forward the opentelemetry-collector
+          // oc -n opentelemetry port-forward $(oc -n opentelemetry get pod -l app.kubernetes.io/name=opentelemetry-collector -o name) 4318:4318
+          // Switch oc config current-context back to OpenShift Local
+          OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
+              .setTracerProvider(sdkTracerProvider)
+              .setMeterProvider(sdkMeterProvider)
+              .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
+              .buildAndRegisterGlobal();
+          vertxBuilder.withTracer(new OpenTelemetryTracingFactory(openTelemetry));
+        }
+        vertxBuilder.buildClustered().onSuccess(vertx -> {
+          ConfigRetriever configRetriever = ConfigRetriever.create(vertx, retrieverOptions);
+          configRetriever.getConfig().onSuccess(config2 -> {
+            LOG.info("The config was configured successfully. ");
+            runDecision(vertx, config2).onSuccess(a -> {
+              runVerticles(vertx, config2, sdkTracerProvider, sdkMeterProvider).onSuccess(b -> {
+                LOG.info("Running verticles succeeded. ");
+              }).onFailure(ex -> {
+                LOG.error("Running verticles failed. ", ex);
+              });
+            }).onFailure(ex -> {
+              LOG.info("run decision failed");
+              vertx.close();
+              System.exit(1);
+            });
+          }).onFailure(ex -> {
+            LOG.error("Unable to configure the config. ", ex);
+          });
+        }).onFailure(ex -> {
+          LOG.error("Running verticles failed. ", ex);
+        });
+      } else {
+        VertxBuilder vertxBuilder = Vertx.builder();
+        vertxBuilder.with(vertxOptions);
+        if(Boolean.valueOf(config.getString(ConfigKeys.ENABLE_OPEN_TELEMETRY))) {
+          // Switch oc config current-context to your other cluster to port forward the opentelemetry-collector
+          // oc -n opentelemetry port-forward $(oc -n opentelemetry get pod -l app.kubernetes.io/name=opentelemetry-collector -o name) 4318:4318
+          // Switch oc config current-context back to OpenShift Local
+          OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
+              .setTracerProvider(sdkTracerProvider)
+              .setMeterProvider(sdkMeterProvider)
+              .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
+              .buildAndRegisterGlobal();
+          vertxBuilder.withTracer(new OpenTelemetryTracingFactory(openTelemetry));
+        }
+        Vertx vertx = vertxBuilder.build();
+        ConfigRetriever configRetriever = ConfigRetriever.create(vertx, retrieverOptions);
+        configRetriever.getConfig().onSuccess(config2 -> {
+          LOG.info("The config was configured successfully. ");
+          runDecision(vertx, config2).onSuccess(a -> {
+            runVerticles(vertx, config2, sdkTracerProvider, sdkMeterProvider).onSuccess(b -> {
+              LOG.info("Running verticles succeeded. ");
+            }).onFailure(ex -> {
+              LOG.error("Running verticles failed. ", ex);
+            });
+          }).onFailure(ex -> {
+            LOG.info("run decision failed");
+            vertx.close();
+            System.exit(1);
+          });
+        }).onFailure(ex -> {
+          LOG.error("Unable to configure the config. ", ex);
+        });
+      }
+    } catch (Throwable ex) {
+      LOG.error("Creating Vertx failed. ", ex);
+    }
+  }
+
+  public static Future<Void> runEnv() {
+    Promise<Void> promise = Promise.promise();
+    try {
+      Boolean enableZookeeperCluster = Boolean.valueOf(System.getenv(ConfigKeys.ENABLE_ZOOKEEPER_CLUSTER));
+      VertxOptions vertxOptions = new VertxOptions();
+      EventBusOptions eventBusOptions = new EventBusOptions();
+  
+      ClusterManager clusterManager = null;
+      if(enableZookeeperCluster) {
+        JsonObject zkConfig = new JsonObject();
+        String zookeeperHostName = System.getenv(ConfigKeys.ZOOKEEPER_HOST_NAME);
+        Integer zookeeperPort = Integer.parseInt(System.getenv(ConfigKeys.ZOOKEEPER_PORT));
+        String zookeeperHosts = Optional.ofNullable(System.getenv(ConfigKeys.ZOOKEEPER_HOSTS)).orElse(zookeeperHostName + ":" + zookeeperPort);
+        String clusterHostName = System.getenv(ConfigKeys.CLUSTER_HOST_NAME);
+        Integer clusterPort = Integer.parseInt(System.getenv(ConfigKeys.CLUSTER_PORT));
+        String clusterPublicHostName = System.getenv(ConfigKeys.CLUSTER_PUBLIC_HOST_NAME);
+        Integer clusterPublicPort = Integer.parseInt(System.getenv(ConfigKeys.CLUSTER_PUBLIC_PORT));
+        String zookeeperRetryPolicy = System.getenv(ConfigKeys.ZOOKEEPER_RETRY_POLICY);
+        Integer zookeeperBaseSleepTimeMillis = Integer.parseInt(System.getenv(ConfigKeys.ZOOKEEPER_BASE_SLEEP_TIME_MILLIS));
+        Integer zookeeperMaxSleepMillis = Integer.parseInt(System.getenv(ConfigKeys.ZOOKEEPER_MAX_SLEEP_MILLIS));
+        Integer zookeeperMaxRetries = Integer.parseInt(System.getenv(ConfigKeys.ZOOKEEPER_MAX_RETRIES));
+        Integer zookeeperConnectionTimeoutMillis = Integer.parseInt(System.getenv(ConfigKeys.ZOOKEEPER_CONNECTION_TIMEOUT_MILLIS));
+        Integer zookeeperSessionTimeoutMillis = Integer.parseInt(System.getenv(ConfigKeys.ZOOKEEPER_SESSION_TIMEOUT_MILLIS));
+        zkConfig.put("zookeeperHosts", zookeeperHosts);
+        zkConfig.put("sessionTimeout", zookeeperSessionTimeoutMillis);
+        zkConfig.put("connectTimeout", zookeeperConnectionTimeoutMillis);
+        zkConfig.put("rootPath", System.getenv(ConfigKeys.ZOOKEEPER_ROOT_PATH));
+        zkConfig.put("retry", new JsonObject()
+            .put("policy", zookeeperRetryPolicy)
+            .put("initialSleepTime", zookeeperBaseSleepTimeMillis)
+            .put("intervalTimes", zookeeperMaxSleepMillis)
+            .put("maxTimes", zookeeperMaxRetries)
+        );
+        clusterManager = new ZookeeperClusterManager(zkConfig);
+  
+        if(clusterHostName != null) {
+          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_HOST_NAME, clusterHostName));
+          eventBusOptions.setHost(clusterHostName);
+        }
+        if(clusterPort != null) {
+          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PORT, clusterPort));
+          eventBusOptions.setPort(clusterPort);
+        }
+        if(clusterPublicHostName != null) {
+          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PUBLIC_HOST_NAME, clusterPublicHostName));
+          eventBusOptions.setClusterPublicHost(clusterPublicHostName);
+        }
+        if(clusterPublicPort != null) {
+          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PUBLIC_PORT, clusterPublicPort));
+          eventBusOptions.setClusterPublicPort(clusterPublicPort);
+        }
+      }
+      Long vertxWarningExceptionSeconds = Long.parseLong(System.getenv(ConfigKeys.VERTX_WARNING_EXCEPTION_SECONDS));
+      Long vertxMaxEventLoopExecuteTime = Long.parseLong(System.getenv(ConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME));
+      Long vertxMaxWorkerExecuteTime = Long.parseLong(System.getenv(ConfigKeys.VERTX_MAX_WORKER_EXECUTE_TIME));
+      vertxOptions.setEventBusOptions(eventBusOptions);
+      vertxOptions.setWarningExceptionTime(vertxWarningExceptionSeconds);
+      vertxOptions.setWarningExceptionTimeUnit(TimeUnit.SECONDS);
+      vertxOptions.setMaxEventLoopExecuteTime(vertxMaxEventLoopExecuteTime);
+      vertxOptions.setMaxEventLoopExecuteTimeUnit(TimeUnit.SECONDS);
+      vertxOptions.setMaxWorkerExecuteTime(vertxMaxWorkerExecuteTime);
+      vertxOptions.setMaxWorkerExecuteTimeUnit(TimeUnit.SECONDS);
+      vertxOptions.setWorkerPoolSize(Integer.parseInt(System.getenv(ConfigKeys.WORKER_POOL_SIZE)));
+
+      Resource resource = Resource.builder()
+          .put("service.name", System.getenv(ConfigKeys.SITE_NAME))
+          .build();
+      SdkTracerProvider sdkTracerProvider = Boolean.valueOf(System.getenv(ConfigKeys.ENABLE_OPEN_TELEMETRY)) ? 
+          SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(OtlpHttpSpanExporter.builder().build())).build() : null;
+      SdkMeterProvider sdkMeterProvider = Boolean.valueOf(System.getenv(ConfigKeys.ENABLE_OPEN_TELEMETRY)) ? 
+          SdkMeterProvider.builder().build() : null;
+  
+      if(enableZookeeperCluster) {
+        VertxBuilder vertxBuilder = Vertx.builder();
+        vertxBuilder.with(vertxOptions);
+        vertxBuilder.withClusterManager(clusterManager);
+        if(Boolean.valueOf(System.getenv(ConfigKeys.ENABLE_OPEN_TELEMETRY))) {
+          // Switch oc config current-context to your other cluster to port forward the opentelemetry-collector
+          // oc -n opentelemetry port-forward $(oc -n opentelemetry get pod -l app.kubernetes.io/name=opentelemetry-collector -o name) 4318:4318
+          // Switch oc config current-context back to OpenShift Local
+          OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
+              .setTracerProvider(sdkTracerProvider)
+              .setMeterProvider(sdkMeterProvider)
+              .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
+              .buildAndRegisterGlobal();
+          vertxBuilder.withTracer(new OpenTelemetryTracingFactory(openTelemetry));
+        }
+        vertxBuilder.buildClustered().onSuccess(vertx -> {
+          ConfigStoreOptions storeEnv = new ConfigStoreOptions().setType("env");
+          ConfigRetrieverOptions retrieverOptions = new ConfigRetrieverOptions();
+          retrieverOptions.addStore(storeEnv);
+          ConfigRetriever configRetriever = ConfigRetriever.create(vertx, retrieverOptions);
+
+          configRetriever.getConfig().onSuccess(config -> {
+            LOG.info("The config was configured successfully. ");
+            runDecision(vertx, config).onSuccess(a -> {
+              runVerticles(vertx, config, sdkTracerProvider, sdkMeterProvider).onSuccess(b -> {
+                LOG.info("Running verticles succeeded. ");
+              }).onFailure(ex -> {
+                LOG.error("Running verticles failed. ", ex);
+              });
+            }).onFailure(ex -> {
+              LOG.info("run decision failed");
+              vertx.close();
+              System.exit(1);
+            });
+          }).onFailure(ex -> {
+            LOG.error("Unable to configure the config. ", ex);
+            promise.fail(ex);
+          });
+        }).onFailure(ex -> {
+          LOG.error("Creating clustered Vertx failed. ", ex);
+          promise.fail(ex);
+        });
+      } else {
+        VertxBuilder vertxBuilder = Vertx.builder();
+        vertxBuilder.with(vertxOptions);
+        if(Boolean.valueOf(System.getenv(ConfigKeys.ENABLE_OPEN_TELEMETRY))) {
+          // Switch oc config current-context to your other cluster to port forward the opentelemetry-collector
+          // oc -n opentelemetry port-forward $(oc -n opentelemetry get pod -l app.kubernetes.io/name=opentelemetry-collector -o name) 4318:4318
+          // Switch oc config current-context back to OpenShift Local
+          OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
+              .setTracerProvider(sdkTracerProvider)
+              .setMeterProvider(sdkMeterProvider)
+              .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
+              .buildAndRegisterGlobal();
+          vertxBuilder.withTracer(new OpenTelemetryTracingFactory(openTelemetry));
+        }
+        Vertx vertx = vertxBuilder.build();
+        ConfigStoreOptions storeEnv = new ConfigStoreOptions().setType("env");
+        ConfigRetrieverOptions retrieverOptions = new ConfigRetrieverOptions();
+        retrieverOptions.addStore(storeEnv);
+        ConfigRetriever configRetriever = ConfigRetriever.create(vertx, retrieverOptions);
+
+        configRetriever.getConfig().onSuccess(config -> {
+          LOG.info("The config was configured successfully. ");
+          runDecision(vertx, config).onSuccess(a -> {
+            runVerticles(vertx, config, sdkTracerProvider, sdkMeterProvider).onSuccess(b -> {
+              LOG.info("Running verticles succeeded. ");
+            }).onFailure(ex -> {
+              LOG.error("Running verticles failed. ", ex);
+            });
+          }).onFailure(ex -> {
+            LOG.info("run decision failed");
+            vertx.close();
+            System.exit(1);
+          });
+        }).onFailure(ex -> {
+          LOG.error("Unable to configure the config. ", ex);
+          promise.fail(ex);
+        });
+      }
+    } catch (Throwable ex) {
+      LOG.error("Creating Vertx failed. ", ex);
+      promise.fail(ex);
+    }
+    return promise.future();
   }
 
   /**
@@ -664,130 +969,6 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       vertx.close();
       LOG.error("Creating clustered Vertx failed. ", ex);
       ExceptionUtils.rethrow(ex);
-    }
-    return promise.future();
-  }
-
-  public static Future<Void> run(JsonObject config) {
-    Promise<Void> promise = Promise.promise();
-    try {
-      Boolean enableZookeeperCluster = Boolean.valueOf(config.getString(ConfigKeys.ENABLE_ZOOKEEPER_CLUSTER));
-      VertxOptions vertxOptions = new VertxOptions();
-      EventBusOptions eventBusOptions = new EventBusOptions();
-  
-      ClusterManager clusterManager = null;
-      if(enableZookeeperCluster) {
-        JsonObject zkConfig = new JsonObject();
-        String zookeeperHostName = config.getString(ConfigKeys.ZOOKEEPER_HOST_NAME);
-        Integer zookeeperPort = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_PORT));
-        String zookeeperHosts = Optional.ofNullable(config.getString(ConfigKeys.ZOOKEEPER_HOSTS)).orElse(zookeeperHostName + ":" + zookeeperPort);
-        String clusterHostName = config.getString(ConfigKeys.CLUSTER_HOST_NAME);
-        Integer clusterPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PORT));
-        String clusterPublicHostName = config.getString(ConfigKeys.CLUSTER_PUBLIC_HOST_NAME);
-        Integer clusterPublicPort = Integer.parseInt(config.getString(ConfigKeys.CLUSTER_PUBLIC_PORT));
-        String zookeeperRetryPolicy = config.getString(ConfigKeys.ZOOKEEPER_RETRY_POLICY);
-        Integer zookeeperBaseSleepTimeMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_BASE_SLEEP_TIME_MILLIS));
-        Integer zookeeperMaxSleepMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_MAX_SLEEP_MILLIS));
-        Integer zookeeperMaxRetries = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_MAX_RETRIES));
-        Integer zookeeperConnectionTimeoutMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_CONNECTION_TIMEOUT_MILLIS));
-        Integer zookeeperSessionTimeoutMillis = Integer.parseInt(config.getString(ConfigKeys.ZOOKEEPER_SESSION_TIMEOUT_MILLIS));
-        zkConfig.put("zookeeperHosts", zookeeperHosts);
-        zkConfig.put("sessionTimeout", zookeeperSessionTimeoutMillis);
-        zkConfig.put("connectTimeout", zookeeperConnectionTimeoutMillis);
-        zkConfig.put("rootPath", config.getString(ConfigKeys.ZOOKEEPER_ROOT_PATH));
-        zkConfig.put("retry", new JsonObject()
-            .put("policy", zookeeperRetryPolicy)
-            .put("initialSleepTime", zookeeperBaseSleepTimeMillis)
-            .put("intervalTimes", zookeeperMaxSleepMillis)
-            .put("maxTimes", zookeeperMaxRetries)
-        );
-        clusterManager = new ZookeeperClusterManager(zkConfig);
-  
-        if(clusterHostName != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_HOST_NAME, clusterHostName));
-          eventBusOptions.setHost(clusterHostName);
-        }
-        if(clusterPort != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PORT, clusterPort));
-          eventBusOptions.setPort(clusterPort);
-        }
-        if(clusterPublicHostName != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PUBLIC_HOST_NAME, clusterPublicHostName));
-          eventBusOptions.setClusterPublicHost(clusterPublicHostName);
-        }
-        if(clusterPublicPort != null) {
-          LOG.info(String.format("%s — %s", ConfigKeys.CLUSTER_PUBLIC_PORT, clusterPublicPort));
-          eventBusOptions.setClusterPublicPort(clusterPublicPort);
-        }
-      }
-      Long vertxWarningExceptionSeconds = config.getLong(ConfigKeys.VERTX_WARNING_EXCEPTION_SECONDS);
-      Long vertxMaxEventLoopExecuteTime = config.getLong(ConfigKeys.VERTX_MAX_EVENT_LOOP_EXECUTE_TIME);
-      Long vertxMaxWorkerExecuteTime = config.getLong(ConfigKeys.VERTX_MAX_WORKER_EXECUTE_TIME);
-      vertxOptions.setEventBusOptions(eventBusOptions);
-      vertxOptions.setWarningExceptionTime(vertxWarningExceptionSeconds);
-      vertxOptions.setWarningExceptionTimeUnit(TimeUnit.SECONDS);
-      vertxOptions.setMaxEventLoopExecuteTime(vertxMaxEventLoopExecuteTime);
-      vertxOptions.setMaxEventLoopExecuteTimeUnit(TimeUnit.SECONDS);
-      vertxOptions.setMaxWorkerExecuteTime(vertxMaxWorkerExecuteTime);
-      vertxOptions.setMaxWorkerExecuteTimeUnit(TimeUnit.SECONDS);
-      vertxOptions.setWorkerPoolSize(Integer.parseInt(config.getString(ConfigKeys.WORKER_POOL_SIZE)));
-
-      Resource resource = Resource.builder()
-          .put("service.name", config.getString(ConfigKeys.SITE_NAME))
-          .build();
-      SdkTracerProvider sdkTracerProvider = Boolean.valueOf(config.getString(ConfigKeys.ENABLE_OPEN_TELEMETRY)) ? 
-          SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(OtlpHttpSpanExporter.builder().build())).build() : null;
-      SdkMeterProvider sdkMeterProvider = Boolean.valueOf(config.getString(ConfigKeys.ENABLE_OPEN_TELEMETRY)) ? 
-          SdkMeterProvider.builder().build() : null;
-  
-      if(enableZookeeperCluster) {
-        VertxBuilder vertxBuilder = Vertx.builder();
-        vertxBuilder.with(vertxOptions);
-        vertxBuilder.withClusterManager(clusterManager);
-        if(Boolean.valueOf(config.getString(ConfigKeys.ENABLE_OPEN_TELEMETRY))) {
-          // Switch oc config current-context to your other cluster to port forward the opentelemetry-collector
-          // oc -n opentelemetry port-forward $(oc -n opentelemetry get pod -l app.kubernetes.io/name=opentelemetry-collector -o name) 4318:4318
-          // Switch oc config current-context back to OpenShift Local
-          OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
-              .setTracerProvider(sdkTracerProvider)
-              .setMeterProvider(sdkMeterProvider)
-              .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
-              .buildAndRegisterGlobal();
-          vertxBuilder.withTracer(new OpenTelemetryTracingFactory(openTelemetry));
-        }
-        vertxBuilder.buildClustered().onSuccess(vertx -> {
-          runVerticles(vertx, config, sdkTracerProvider, sdkMeterProvider).onSuccess(a -> {
-            promise.complete();
-          });
-        }).onFailure(ex -> {
-          LOG.error("Creating clustered Vertx failed. ", ex);
-          promise.fail(ex);
-        });
-      } else {
-        VertxBuilder vertxBuilder = Vertx.builder();
-        vertxBuilder.with(vertxOptions);
-        if(Boolean.valueOf(config.getString(ConfigKeys.ENABLE_OPEN_TELEMETRY))) {
-          // Switch oc config current-context to your other cluster to port forward the opentelemetry-collector
-          // oc -n opentelemetry port-forward $(oc -n opentelemetry get pod -l app.kubernetes.io/name=opentelemetry-collector -o name) 4318:4318
-          // Switch oc config current-context back to OpenShift Local
-          OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
-              .setTracerProvider(sdkTracerProvider)
-              .setMeterProvider(sdkMeterProvider)
-              .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
-              .buildAndRegisterGlobal();
-          vertxBuilder.withTracer(new OpenTelemetryTracingFactory(openTelemetry));
-        }
-        Vertx vertx = vertxBuilder.build();
-        runVerticles(vertx, config, sdkTracerProvider, sdkMeterProvider).onSuccess(a -> {
-          promise.complete();
-        }).onFailure(ex -> {
-          LOG.error("Running verticles failed. ", ex);
-          promise.fail(ex);
-        });
-      }
-    } catch (Throwable ex) {
-      LOG.error("Creating Vertx failed. ", ex);
-      promise.fail(ex);
     }
     return promise.future();
   }
@@ -1166,41 +1347,6 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       LOG.error("Could not configure the auth server and API.", ex);
       promise.fail(ex);
     }
-    return promise.future();
-  }
-
-  /**
-   **/
-  public static Future<JsonObject> configureConfig(Vertx vertx) {
-    Promise<JsonObject> promise = Promise.promise();
-
-    try {
-      ConfigRetrieverOptions retrieverOptions = new ConfigRetrieverOptions();
-
-      String configVarsPath = System.getenv(ComputateConfigKeys.VARS_PATH);
-      if(StringUtils.isNotBlank(configVarsPath)) {
-        Jinjava jinjava = ComputateConfigKeys.getJinjava();
-        JsonObject config = ComputateConfigKeys.getConfig(jinjava);
-        ConfigStoreOptions configOptions = new ConfigStoreOptions().setType("json").setConfig(config);
-        retrieverOptions.addStore(configOptions);
-      }
-
-      ConfigStoreOptions storeEnv = new ConfigStoreOptions().setType("env");
-      retrieverOptions.addStore(storeEnv);
-
-      ConfigRetriever configRetriever = ConfigRetriever.create(vertx, retrieverOptions);
-      configRetriever.getConfig().onSuccess(config -> {
-        LOG.info("The config was configured successfully. ");
-        promise.complete(config);
-      }).onFailure(ex -> {
-        LOG.error("Unable to configure site context. ", ex);
-        promise.fail(ex);
-      });
-    } catch(Exception ex) {
-      LOG.error("Unable to configure site context. ", ex);
-      promise.fail(ex);
-    }
-
     return promise.future();
   }
 

@@ -993,6 +993,140 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     return projectFieldOfScience;
   }
 
+	/////////////////////////////
+  // defaultOpenShiftProject //
+	/////////////////////////////
+
+
+  /**
+   *  The entity defaultOpenShiftProject
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected Boolean defaultOpenShiftProject;
+
+  /**
+   * <br> The entity defaultOpenShiftProject
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:defaultOpenShiftProject">Find the entity defaultOpenShiftProject in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _defaultOpenShiftProject(Wrap<Boolean> w);
+
+  public Boolean getDefaultOpenShiftProject() {
+    return defaultOpenShiftProject;
+  }
+
+  public void setDefaultOpenShiftProject(Boolean defaultOpenShiftProject) {
+    this.defaultOpenShiftProject = defaultOpenShiftProject;
+  }
+  @JsonIgnore
+  public void setDefaultOpenShiftProject(String o) {
+    this.defaultOpenShiftProject = Project.staticSetDefaultOpenShiftProject(siteRequest_, o);
+  }
+  public static Boolean staticSetDefaultOpenShiftProject(SiteRequest siteRequest_, String o) {
+    return Boolean.parseBoolean(o);
+  }
+  protected Project defaultOpenShiftProjectInit() {
+    Wrap<Boolean> defaultOpenShiftProjectWrap = new Wrap<Boolean>().var("defaultOpenShiftProject");
+    if(defaultOpenShiftProject == null) {
+      _defaultOpenShiftProject(defaultOpenShiftProjectWrap);
+      Optional.ofNullable(defaultOpenShiftProjectWrap.getO()).ifPresent(o -> {
+        setDefaultOpenShiftProject(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static Boolean staticSearchDefaultOpenShiftProject(SiteRequest siteRequest_, Boolean o) {
+    return o;
+  }
+
+  public static String staticSearchStrDefaultOpenShiftProject(SiteRequest siteRequest_, Boolean o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqDefaultOpenShiftProject(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchDefaultOpenShiftProject(siteRequest_, Project.staticSetDefaultOpenShiftProject(siteRequest_, o)).toString();
+  }
+
+  public Boolean sqlDefaultOpenShiftProject() {
+    return defaultOpenShiftProject;
+  }
+
+  public static Boolean staticJsonDefaultOpenShiftProject(Boolean defaultOpenShiftProject) {
+    return defaultOpenShiftProject;
+  }
+
+	///////////////////////
+  // defaultOpsProject //
+	///////////////////////
+
+
+  /**
+   *  The entity defaultOpsProject
+   *	 is defined as null before being initialized. 
+   */
+  @JsonProperty
+  @JsonInclude(Include.NON_NULL)
+  protected Boolean defaultOpsProject;
+
+  /**
+   * <br> The entity defaultOpsProject
+   *  is defined as null before being initialized. 
+   * <br><a href="https://solr.apps-crc.testing/solr/#/computate/query?q=*:*&fq=partEstEntite_indexed_boolean:true&fq=classeNomCanonique_enUS_indexed_string:org.computate.aitelemetry.model.project.Project&fq=entiteVar_enUS_indexed_string:defaultOpsProject">Find the entity defaultOpsProject in Solr</a>
+   * <br>
+   * @param w is for wrapping a value to assign to this entity during initialization. 
+   **/
+  protected abstract void _defaultOpsProject(Wrap<Boolean> w);
+
+  public Boolean getDefaultOpsProject() {
+    return defaultOpsProject;
+  }
+
+  public void setDefaultOpsProject(Boolean defaultOpsProject) {
+    this.defaultOpsProject = defaultOpsProject;
+  }
+  @JsonIgnore
+  public void setDefaultOpsProject(String o) {
+    this.defaultOpsProject = Project.staticSetDefaultOpsProject(siteRequest_, o);
+  }
+  public static Boolean staticSetDefaultOpsProject(SiteRequest siteRequest_, String o) {
+    return Boolean.parseBoolean(o);
+  }
+  protected Project defaultOpsProjectInit() {
+    Wrap<Boolean> defaultOpsProjectWrap = new Wrap<Boolean>().var("defaultOpsProject");
+    if(defaultOpsProject == null) {
+      _defaultOpsProject(defaultOpsProjectWrap);
+      Optional.ofNullable(defaultOpsProjectWrap.getO()).ifPresent(o -> {
+        setDefaultOpsProject(o);
+      });
+    }
+    return (Project)this;
+  }
+
+  public static Boolean staticSearchDefaultOpsProject(SiteRequest siteRequest_, Boolean o) {
+    return o;
+  }
+
+  public static String staticSearchStrDefaultOpsProject(SiteRequest siteRequest_, Boolean o) {
+    return o == null ? null : o.toString();
+  }
+
+  public static String staticSearchFqDefaultOpsProject(SiteRequest siteRequest_, String o) {
+    return Project.staticSearchDefaultOpsProject(siteRequest_, Project.staticSetDefaultOpsProject(siteRequest_, o)).toString();
+  }
+
+  public Boolean sqlDefaultOpsProject() {
+    return defaultOpsProject;
+  }
+
+  public static Boolean staticJsonDefaultOpsProject(Boolean defaultOpsProject) {
+    return defaultOpsProject;
+  }
+
 	///////////////////
   // projectActive //
 	///////////////////
@@ -1836,6 +1970,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         projectTitleInit();
         descriptionInit();
         projectFieldOfScienceInit();
+        defaultOpenShiftProjectInit();
+        defaultOpsProjectInit();
         projectActiveInit();
         gpuEnabledInit();
         vllmEnabledInit();
@@ -1924,6 +2060,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return oProject.description;
       case "projectFieldOfScience":
         return oProject.projectFieldOfScience;
+      case "defaultOpenShiftProject":
+        return oProject.defaultOpenShiftProject;
+      case "defaultOpsProject":
+        return oProject.defaultOpsProject;
       case "projectActive":
         return oProject.projectActive;
       case "gpuEnabled":
@@ -2027,6 +2167,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSetDescription(siteRequest_, v);
     case "projectFieldOfScience":
       return Project.staticSetProjectFieldOfScience(siteRequest_, v);
+    case "defaultOpenShiftProject":
+      return Project.staticSetDefaultOpenShiftProject(siteRequest_, v);
+    case "defaultOpsProject":
+      return Project.staticSetDefaultOpsProject(siteRequest_, v);
     case "projectActive":
       return Project.staticSetProjectActive(siteRequest_, v);
     case "gpuEnabled":
@@ -2275,6 +2419,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchDescription(siteRequest_, (String)o);
     case "projectFieldOfScience":
       return Project.staticSearchProjectFieldOfScience(siteRequest_, (String)o);
+    case "defaultOpenShiftProject":
+      return Project.staticSearchDefaultOpenShiftProject(siteRequest_, (Boolean)o);
+    case "defaultOpsProject":
+      return Project.staticSearchDefaultOpsProject(siteRequest_, (Boolean)o);
     case "projectActive":
       return Project.staticSearchProjectActive(siteRequest_, (Boolean)o);
     case "gpuEnabled":
@@ -2335,6 +2483,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchStrDescription(siteRequest_, (String)o);
     case "projectFieldOfScience":
       return Project.staticSearchStrProjectFieldOfScience(siteRequest_, (String)o);
+    case "defaultOpenShiftProject":
+      return Project.staticSearchStrDefaultOpenShiftProject(siteRequest_, (Boolean)o);
+    case "defaultOpsProject":
+      return Project.staticSearchStrDefaultOpsProject(siteRequest_, (Boolean)o);
     case "projectActive":
       return Project.staticSearchStrProjectActive(siteRequest_, (Boolean)o);
     case "gpuEnabled":
@@ -2395,6 +2547,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return Project.staticSearchFqDescription(siteRequest_, o);
     case "projectFieldOfScience":
       return Project.staticSearchFqProjectFieldOfScience(siteRequest_, o);
+    case "defaultOpenShiftProject":
+      return Project.staticSearchFqDefaultOpenShiftProject(siteRequest_, o);
+    case "defaultOpsProject":
+      return Project.staticSearchFqDefaultOpsProject(siteRequest_, o);
     case "projectActive":
       return Project.staticSearchFqProjectActive(siteRequest_, o);
     case "gpuEnabled":
@@ -2508,6 +2664,22 @@ public abstract class ProjectGen<DEV> extends BaseModel {
           setProjectFieldOfScience((String)val);
         }
         saves.add("projectFieldOfScience");
+        return val;
+      } else if("defaultopenshiftproject".equals(varLower)) {
+        if(val instanceof Boolean) {
+          setDefaultOpenShiftProject((Boolean)val);
+        } else {
+          setDefaultOpenShiftProject(val == null ? null : val.toString());
+        }
+        saves.add("defaultOpenShiftProject");
+        return val;
+      } else if("defaultopsproject".equals(varLower)) {
+        if(val instanceof Boolean) {
+          setDefaultOpsProject((Boolean)val);
+        } else {
+          setDefaultOpsProject(val == null ? null : val.toString());
+        }
+        saves.add("defaultOpsProject");
         return val;
       } else if("projectactive".equals(varLower)) {
         if(val instanceof Boolean) {
@@ -2690,6 +2862,18 @@ public abstract class ProjectGen<DEV> extends BaseModel {
           oProject.setProjectFieldOfScience(projectFieldOfScience);
       }
 
+      if(saves.contains("defaultOpenShiftProject")) {
+        Boolean defaultOpenShiftProject = (Boolean)doc.get("defaultOpenShiftProject_docvalues_boolean");
+        if(defaultOpenShiftProject != null)
+          oProject.setDefaultOpenShiftProject(defaultOpenShiftProject);
+      }
+
+      if(saves.contains("defaultOpsProject")) {
+        Boolean defaultOpsProject = (Boolean)doc.get("defaultOpsProject_docvalues_boolean");
+        if(defaultOpsProject != null)
+          oProject.setDefaultOpsProject(defaultOpsProject);
+      }
+
       if(saves.contains("projectActive")) {
         Boolean projectActive = (Boolean)doc.get("projectActive_docvalues_boolean");
         if(projectActive != null)
@@ -2806,6 +2990,12 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     if(projectFieldOfScience != null) {
       doc.put("projectFieldOfScience_docvalues_string", projectFieldOfScience);
     }
+    if(defaultOpenShiftProject != null) {
+      doc.put("defaultOpenShiftProject_docvalues_boolean", defaultOpenShiftProject);
+    }
+    if(defaultOpsProject != null) {
+      doc.put("defaultOpsProject_docvalues_boolean", defaultOpsProject);
+    }
     if(projectActive != null) {
       doc.put("projectActive_docvalues_boolean", projectActive);
     }
@@ -2881,6 +3071,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "description_docvalues_string";
       case "projectFieldOfScience":
         return "projectFieldOfScience_docvalues_string";
+      case "defaultOpenShiftProject":
+        return "defaultOpenShiftProject_docvalues_boolean";
+      case "defaultOpsProject":
+        return "defaultOpsProject_docvalues_boolean";
       case "projectActive":
         return "projectActive_docvalues_boolean";
       case "gpuEnabled":
@@ -2934,6 +3128,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "description_docvalues_string";
       case "projectFieldOfScience":
         return "projectFieldOfScience_docvalues_string";
+      case "defaultOpenShiftProject":
+        return "defaultOpenShiftProject_docvalues_boolean";
+      case "defaultOpsProject":
+        return "defaultOpsProject_docvalues_boolean";
       case "projectActive":
         return "projectActive_docvalues_boolean";
       case "gpuEnabled":
@@ -2987,6 +3185,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         return "description";
       case "projectFieldOfScience_docvalues_string":
         return "projectFieldOfScience";
+      case "defaultOpenShiftProject_docvalues_boolean":
+        return "defaultOpenShiftProject";
+      case "defaultOpsProject_docvalues_boolean":
+        return "defaultOpsProject";
       case "projectActive_docvalues_boolean":
         return "projectActive";
       case "gpuEnabled_docvalues_boolean":
@@ -3051,6 +3253,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     oProject.setProjectTitle(Optional.ofNullable(doc.get("projectTitle_docvalues_string")).map(v -> v.toString()).orElse(null));
     oProject.setDescription(Optional.ofNullable(doc.get("description_docvalues_string")).map(v -> v.toString()).orElse(null));
     oProject.setProjectFieldOfScience(Optional.ofNullable(doc.get("projectFieldOfScience_docvalues_string")).map(v -> v.toString()).orElse(null));
+    oProject.setDefaultOpenShiftProject(Optional.ofNullable(doc.get("defaultOpenShiftProject_docvalues_boolean")).map(v -> v.toString()).orElse(null));
+    oProject.setDefaultOpsProject(Optional.ofNullable(doc.get("defaultOpsProject_docvalues_boolean")).map(v -> v.toString()).orElse(null));
     oProject.setProjectActive(Optional.ofNullable(doc.get("projectActive_docvalues_boolean")).map(v -> v.toString()).orElse(null));
     oProject.setGpuEnabled(Optional.ofNullable(doc.get("gpuEnabled_docvalues_boolean")).map(v -> v.toString()).orElse(null));
     oProject.setVllmEnabled(Optional.ofNullable(doc.get("vllmEnabled_docvalues_boolean")).map(v -> v.toString()).orElse(null));
@@ -3105,6 +3309,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
         apiRequest.addVars("description");
       if(!Objects.equals(projectFieldOfScience, original.getProjectFieldOfScience()))
         apiRequest.addVars("projectFieldOfScience");
+      if(!Objects.equals(defaultOpenShiftProject, original.getDefaultOpenShiftProject()))
+        apiRequest.addVars("defaultOpenShiftProject");
+      if(!Objects.equals(defaultOpsProject, original.getDefaultOpsProject()))
+        apiRequest.addVars("defaultOpsProject");
       if(!Objects.equals(projectActive, original.getProjectActive()))
         apiRequest.addVars("projectActive");
       if(!Objects.equals(gpuEnabled, original.getGpuEnabled()))
@@ -3150,6 +3358,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     sb.append(Optional.ofNullable(projectTitle).map(v -> "projectTitle: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(description).map(v -> "description: \"" + v + "\"\n" ).orElse(""));
     sb.append(Optional.ofNullable(projectFieldOfScience).map(v -> "projectFieldOfScience: \"" + v + "\"\n" ).orElse(""));
+    sb.append(Optional.ofNullable(defaultOpenShiftProject).map(v -> "defaultOpenShiftProject: " + v + "\n").orElse(""));
+    sb.append(Optional.ofNullable(defaultOpsProject).map(v -> "defaultOpsProject: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(projectActive).map(v -> "projectActive: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(gpuEnabled).map(v -> "gpuEnabled: " + v + "\n").orElse(""));
     sb.append(Optional.ofNullable(vllmEnabled).map(v -> "vllmEnabled: " + v + "\n").orElse(""));
@@ -3195,6 +3405,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String SET_description = "setDescription";
   public static final String VAR_projectFieldOfScience = "projectFieldOfScience";
   public static final String SET_projectFieldOfScience = "setProjectFieldOfScience";
+  public static final String VAR_defaultOpenShiftProject = "defaultOpenShiftProject";
+  public static final String SET_defaultOpenShiftProject = "setDefaultOpenShiftProject";
+  public static final String VAR_defaultOpsProject = "defaultOpsProject";
+  public static final String SET_defaultOpsProject = "setDefaultOpsProject";
   public static final String VAR_projectActive = "projectActive";
   public static final String SET_projectActive = "setProjectActive";
   public static final String VAR_gpuEnabled = "gpuEnabled";
@@ -3241,6 +3455,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     vars.add(VAR_projectTitle);
     vars.add(VAR_description);
     vars.add(VAR_projectFieldOfScience);
+    vars.add(VAR_defaultOpenShiftProject);
+    vars.add(VAR_defaultOpsProject);
     vars.add(VAR_projectActive);
     vars.add(VAR_gpuEnabled);
     vars.add(VAR_vllmEnabled);
@@ -3278,6 +3494,8 @@ public abstract class ProjectGen<DEV> extends BaseModel {
   public static final String DISPLAY_NAME_projectTitle = "project title";
   public static final String DISPLAY_NAME_description = "description";
   public static final String DISPLAY_NAME_projectFieldOfScience = "field of science";
+  public static final String DISPLAY_NAME_defaultOpenShiftProject = "K8S";
+  public static final String DISPLAY_NAME_defaultOpsProject = "Ops";
   public static final String DISPLAY_NAME_projectActive = "project active";
   public static final String DISPLAY_NAME_gpuEnabled = "GPU enabled";
   public static final String DISPLAY_NAME_vllmEnabled = "VLLM enabled";
@@ -3359,6 +3577,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return patch ? SET_description : VAR_description;
     case VAR_projectFieldOfScience:
       return patch ? SET_projectFieldOfScience : VAR_projectFieldOfScience;
+    case VAR_defaultOpenShiftProject:
+      return patch ? SET_defaultOpenShiftProject : VAR_defaultOpenShiftProject;
+    case VAR_defaultOpsProject:
+      return patch ? SET_defaultOpsProject : VAR_defaultOpsProject;
     case VAR_projectActive:
       return patch ? SET_projectActive : VAR_projectActive;
     case VAR_gpuEnabled:
@@ -3415,6 +3637,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return DISPLAY_NAME_description;
     case VAR_projectFieldOfScience:
       return DISPLAY_NAME_projectFieldOfScience;
+    case VAR_defaultOpenShiftProject:
+      return DISPLAY_NAME_defaultOpenShiftProject;
+    case VAR_defaultOpsProject:
+      return DISPLAY_NAME_defaultOpsProject;
     case VAR_projectActive:
       return DISPLAY_NAME_projectActive;
     case VAR_gpuEnabled:
@@ -3470,6 +3696,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return "A description of this project";
     case VAR_projectFieldOfScience:
       return "The field of science of this project.";
+    case VAR_defaultOpenShiftProject:
+      return "Whether the project is a default OpenShift project. ";
+    case VAR_defaultOpsProject:
+      return "Whether the project is a default Operations project. ";
     case VAR_projectActive:
       return "Whether the project is active or terminated. ";
     case VAR_gpuEnabled:
@@ -3523,6 +3753,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return "String";
     case VAR_projectFieldOfScience:
       return "String";
+    case VAR_defaultOpenShiftProject:
+      return "Boolean";
+    case VAR_defaultOpsProject:
+      return "Boolean";
     case VAR_projectActive:
       return "Boolean";
     case VAR_gpuEnabled:
@@ -3558,6 +3792,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 2;
     case VAR_projectName:
       return 3;
+    case VAR_defaultOpenShiftProject:
+      return 5;
+    case VAR_defaultOpsProject:
+      return 6;
       default:
         return BaseModel.htmColumnBaseModel(var);
     }
@@ -3580,6 +3818,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
     case VAR_description:
       return 3;
     case VAR_projectFieldOfScience:
+      return 3;
+    case VAR_defaultOpenShiftProject:
+      return 3;
+    case VAR_defaultOpsProject:
       return 3;
     case VAR_projectActive:
       return 3;
@@ -3624,6 +3866,10 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 8;
     case VAR_projectFieldOfScience:
       return 9;
+    case VAR_defaultOpenShiftProject:
+      return 10;
+    case VAR_defaultOpsProject:
+      return 10;
     case VAR_projectActive:
       return 10;
     case VAR_gpuEnabled:

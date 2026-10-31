@@ -89,7 +89,6 @@ import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.handler.sockjs.SockJSBridgeOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import io.vertx.ext.web.openapi.RouterBuilder;
-import io.vertx.ext.web.sstore.LocalSessionStore;
 import io.vertx.ext.web.sstore.ClusteredSessionStore;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.consumer.KafkaConsumer;

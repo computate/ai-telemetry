@@ -42,6 +42,7 @@ import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.client.HttpRequest;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
 
@@ -224,13 +225,17 @@ public class SiteRoutes {
           get
               .putHeader("Authorization", String.format("Bearer %s", siteRequest.getUserPrincipal().getString("access_token")))
               .send()
-              .expecting(HttpResponseExpectation.SC_OK)
               .onSuccess(metricsResponse -> {
-            handler.response().putHeader("Content-Type", "application/json");
-            handler.end(Optional.ofNullable(metricsResponse.bodyAsJsonObject()).map(body -> body.toBuffer()).orElse(new JsonObject().toBuffer()));
-          }).onFailure(ex -> {
-            LOG.error("Failed to query the prom-keycloak-proxy. ", ex);
-            handler.fail(403, ex);
+          }).onComplete(response -> {
+            if(!response.failed() && response.result().statusCode() == 200) {
+              HttpResponse<Buffer> metricsResponse = response.result();
+              handler.response().putHeader("Content-Type", "application/json");
+              handler.end(Optional.ofNullable(metricsResponse.bodyAsJsonObject()).map(body -> body.toBuffer()).orElse(new JsonObject().toBuffer()));
+            } else {
+              Integer statusCode = Optional.ofNullable(response.result()).map(result -> result.statusCode()).orElse(500);
+              LOG.error(String.format("%s Error: Failed to query the prom-keycloak-proxy: %s", statusCode, uri));
+              handler.fail(statusCode, response.cause());
+            }
           });
         } catch(Exception ex) {
           LOG.error("Failed to load page. ", ex);

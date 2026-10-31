@@ -443,7 +443,39 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                                       body.put(Project.VAR_projectTitle, coldfrontProject.getJsonObject("project").getString("title").replace("\r\n", " ").replace("\n", " "));
                                       body.put(Project.VAR_projectFieldOfScience, coldfrontProject.getJsonObject("project").getString("field_of_science").replace("\r\n", " ").replace("\n", " "));
                                       body.put(Project.VAR_projectActive, "Active".equals(coldfrontProject.getString("status")));
+                                      body.put(Project.VAR_defaultOpenShiftProject, "Active".equals(coldfrontProject.getString("status")));
                                     }
+
+                                    Boolean defaultOpenShiftProject = projectName.startsWith("openshift")
+                                        || projectName.equals("open-cluster-management")
+                                        || projectName.equals("open-cluster-management-observability")
+                                        || projectName.equals("open-cluster-management-observability-addon")
+                                        || projectName.equals("agent-standbox-system")
+                                        || projectName.equals("assisted-installer")
+                                        || projectName.equals("istio-system")
+                                        || projectName.equals("knative-")
+                                        || projectName.equals("kube-public")
+                                        || projectName.equals("kube-system")
+                                        || projectName.equals("metallb-system")
+                                        || projectName.equals("nvidia-gpu-operator")
+                                        || projectName.equals("nvidia-maintenance-operator")
+                                        || projectName.equals("nvidia-network-operator")
+                                        ;
+
+                                    Boolean defaultOpsProject = projectName.startsWith("cert-manager")
+                                        || projectName.equals("container-object-storage-system")
+                                        || projectName.equals("external-secrets")
+                                        || projectName.equals("grafana")
+                                        || projectName.equals("grafana-operator")
+                                        || projectName.equals("object-storage-proxy")
+                                        || projectName.startsWith("oac-")
+                                        || projectName.equals("portworx")
+                                        || projectName.equals("redhat-ods-applications")
+                                        || projectName.equals("redhat-ods-applications-auth-provider")
+                                        || projectName.equals("redhat-ods-monitoring")
+                                        || projectName.equals("rhods-notebooks")
+                                        ;
+
                                     importPageFromFile(body, vertx, config, jinjava, siteRequest, templatePath, Project.CLASS_SIMPLE_NAME).onSuccess(a -> {
                                       body.put(Project.VAR_pk, projectResource);
                                       body.put(Project.VAR_hubId, hubId);
@@ -461,6 +493,8 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                                       body.put(Project.VAR_fullPvcsCount, fullPvcsCount.toString());
                                       body.put(Project.VAR_fullPvcs, new ArrayList<>(fullPvcs));
                                       body.put(Project.VAR_namespaceTerminating, namespaceTerminating);
+                                      body.put(Project.VAR_defaultOpenShiftProject, defaultOpenShiftProject);
+                                      body.put(Project.VAR_defaultOpsProject, defaultOpsProject);
 
                                       JsonObject pageParams = new JsonObject();
                                       pageParams.put("body", body);
@@ -919,16 +953,16 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                   .onSuccess(coldfrontResponse -> {
                 promise.complete(coldfrontResponse.bodyAsJsonArray());
               }).onFailure(ex -> {
-                LOG.error(String.format("Querying Coldfront projects failed at %s for %s", coldfrontApiHostName, coldfrontUri), ex);
-                promise.fail(ex);
+                LOG.error(String.format("Querying Coldfront projects failed at %s for %s", coldfrontApiHostName, coldfrontUri));
+                promise.complete(new JsonArray());
               });
             } catch(Throwable ex) {
-              LOG.error(String.format("Querying Coldfront projects failed at %s for %s", coldfrontApiHostName, coldfrontUri), ex);
-              promise.fail(ex);
+              LOG.error(String.format("Querying Coldfront projects failed at %s for %s", coldfrontApiHostName, coldfrontUri));
+              promise.complete(new JsonArray());
             }
           }).onFailure(ex -> {
-            LOG.error(String.format("Querying Keycloak admin token failed at %s for %s", coldfrontApiHostName, coldfrontUri), ex);
-            promise.fail(ex);
+            LOG.error(String.format("Querying Keycloak admin token failed at %s for %s", coldfrontApiHostName, coldfrontUri));
+            promise.complete(new JsonArray());
           });
         } else {
           promise.complete(new JsonArray());
@@ -937,8 +971,8 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
         promise.complete(new JsonArray());
       }
     } catch(Throwable ex) {
-      LOG.error(String.format(importDataFail, classSimpleName), ex);
-      promise.fail(ex);
+      LOG.error(String.format(importDataFail, classSimpleName));
+      promise.complete(new JsonArray());
     }
     return promise.future();
   }
@@ -952,28 +986,40 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("kube_namespace_status_phase{phase='Terminating', " + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}"));
+      String promKeycloakProxyQuery = String.format("kube_namespace_status_phase{phase='Terminating', " + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}");
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
           .send()
-          .expecting(HttpResponseExpectation.SC_OK)
-          .onSuccess(metricsResponse -> {
-        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        JsonArray results = new JsonArray();
-        Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()).stream()
-            .map(o -> (JsonObject)o).filter(metrics -> 
-            !metrics.getJsonObject("metric").getString("namespace").startsWith("openshift-")
-            && !metrics.getJsonObject("metric").getString("namespace").startsWith("open-cluster-management")
-            ).forEach(metrics -> results.add(metrics));
-        promise.complete(results);
+          .onComplete(metricsComplete -> {
+        try {
+          HttpResponse<Buffer> metricsResponse;
+          if(metricsComplete.succeeded()) {
+            metricsResponse = metricsComplete.result();
+            JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+            JsonArray results = new JsonArray();
+            Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()).stream()
+                .map(o -> (JsonObject)o).filter(metrics -> 
+                !metrics.getJsonObject("metric").getString("namespace").startsWith("openshift-")
+                && !metrics.getJsonObject("metric").getString("namespace").startsWith("open-cluster-management")
+                ).forEach(metrics -> results.add(metrics));
+            promise.complete(results);
+          } else {
+            LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+            promise.complete(new JsonArray());
+          }
+        } catch(Throwable ex) {
+          LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+          promise.complete(new JsonArray());
+        }
       }).onFailure(ex -> {
-        LOG.error(String.format("Querying non-openshift namespaces failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
-        promise.fail(ex);
+        LOG.error(String.format("Failed to import the %s metric for cluster %s in hub %s", promKeycloakProxyQuery, clusterName, hubId));
+        promise.complete(new JsonArray());
       });
     } catch(Throwable ex) {
-      LOG.error(String.format(importDataFail, classSimpleName), ex);
-      promise.fail(ex);
+      LOG.error(String.format(importDataFail, classSimpleName));
+      promise.complete(new JsonArray());
     }
     return promise.future();
   }
@@ -987,23 +1033,34 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String query = "sum by (cluster, namespace) (sum_over_time((max_over_time(vllm:e2e_request_latency_seconds_sum{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + String.format("namespace!=''}[%s:]) >= 0)[%s:%s]))", gap, gapBackInTime, gap);
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(query));
+      String promKeycloakProxyQuery = "sum by (cluster, namespace) (sum_over_time((max_over_time(vllm:e2e_request_latency_seconds_sum{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + String.format("namespace!=''}[%s:]) >= 0)[%s:%s]))", gap, gapBackInTime, gap);
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
           .send()
-          .expecting(HttpResponseExpectation.SC_OK)
-          .onSuccess(metricsResponse -> {
-        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          .onComplete(metricsComplete -> {
+        try {
+          HttpResponse<Buffer> metricsResponse;
+          if(metricsComplete.succeeded()) {
+            metricsResponse = metricsComplete.result();
+            JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+            promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          } else {
+            LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+            promise.complete(new JsonArray());
+          }
+        } catch(Throwable ex) {
+          LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+          promise.complete(new JsonArray());
+        }
       }).onFailure(ex -> {
-        LOG.error(String.format("Querying VLLM projects failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
-        promise.fail(ex);
+        LOG.error(String.format("Failed to import the %s metric for cluster %s in hub %s", promKeycloakProxyQuery, clusterName, hubId));
+        promise.complete(new JsonArray());
       });
     } catch(Throwable ex) {
-      LOG.error("Querying VLLM projects failed", ex);
-      promise.fail(ex);
+      LOG.error(String.format(importDataFail, classSimpleName));
+      promise.complete(new JsonArray());
     }
     return promise.future();
   }
@@ -1017,23 +1074,35 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String query = "sum by (cluster, exported_namespace) (sum_over_time((max_over_time(DCGM_FI_DEV_GPU_UTIL{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + (listProject != null && listProject.size() == 1 ? "exported_namespace='" + listProject.first().getProjectName() + "'" : "exported_namespace!=''") + String.format("}[%s:]) >= 0)[%s:%s]))", gap, gapBackInTime, gap);
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(query));
+      String promKeycloakProxyQuery = "sum by (cluster, exported_namespace) (sum_over_time((max_over_time(DCGM_FI_DEV_GPU_UTIL{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s', ", clusterName)) + (listProject != null && listProject.size() == 1 ? "exported_namespace='" + listProject.first().getProjectName() + "'" : "exported_namespace!=''") + String.format("}[%s:]) >= 0)[%s:%s]))", gap, gapBackInTime, gap);
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
           .send()
           .expecting(HttpResponseExpectation.SC_OK)
-          .onSuccess(metricsResponse -> {
-        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          .onComplete(metricsComplete -> {
+        try {
+          HttpResponse<Buffer> metricsResponse;
+          if(metricsComplete.succeeded()) {
+            metricsResponse = metricsComplete.result();
+            JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+            promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          } else {
+            LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+            promise.complete(new JsonArray());
+          }
+        } catch(Throwable ex) {
+          LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+          promise.complete(new JsonArray());
+        }
       }).onFailure(ex -> {
-        LOG.error(String.format("Querying GPU projects failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
-        promise.fail(ex);
+        LOG.error(String.format("Failed to import the %s metric for cluster %s in hub %s", promKeycloakProxyQuery, clusterName, hubId));
+        promise.complete(new JsonArray());
       });
     } catch(Throwable ex) {
-      LOG.error("Querying GPU projects failed", ex);
-      promise.fail(ex);
+      LOG.error(String.format(importDataFail, classSimpleName));
+      promise.complete(new JsonArray());
     }
     return promise.future();
   }
@@ -1047,22 +1116,34 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("sum by (cluster, namespace, pod) (round(increase(kube_pod_container_status_restarts_total{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}[15m]))) > 0"));
+      String promKeycloakProxyQuery = "sum by (cluster, namespace, pod) (round(increase(kube_pod_container_status_restarts_total{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}[15m]))) > 0";
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
           .send()
-          .expecting(HttpResponseExpectation.SC_OK)
-          .onSuccess(metricsResponse -> {
-        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          .onComplete(metricsComplete -> {
+        try {
+          HttpResponse<Buffer> metricsResponse;
+          if(metricsComplete.succeeded()) {
+            metricsResponse = metricsComplete.result();
+            JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+            promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          } else {
+            LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+            promise.complete(new JsonArray());
+          }
+        } catch(Throwable ex) {
+          LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+          promise.complete(new JsonArray());
+        }
       }).onFailure(ex -> {
-        LOG.error(String.format("Querying pod restarts failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
-        promise.fail(ex);
+        LOG.error(String.format("Failed to import the %s metric for cluster %s in hub %s", promKeycloakProxyQuery, clusterName, hubId));
+        promise.complete(new JsonArray());
       });
     } catch(Throwable ex) {
-      LOG.error(String.format(importDataFail, classSimpleName), ex);
-      promise.fail(ex);
+      LOG.error(String.format(importDataFail, classSimpleName));
+      promise.complete(new JsonArray());
     }
     return promise.future();
   }
@@ -1076,22 +1157,34 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("time() - kube_pod_deletion_timestamp{job='kube-state-metrics', " + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "} > 300"));
+      String promKeycloakProxyQuery = "time() - kube_pod_deletion_timestamp{job='kube-state-metrics', " + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "} > 300";
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
           .send()
-          .expecting(HttpResponseExpectation.SC_OK)
-          .onSuccess(metricsResponse -> {
-        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          .onComplete(metricsComplete -> {
+        try {
+          HttpResponse<Buffer> metricsResponse;
+          if(metricsComplete.succeeded()) {
+            metricsResponse = metricsComplete.result();
+            JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+            promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          } else {
+            LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+            promise.complete(new JsonArray());
+          }
+        } catch(Throwable ex) {
+          LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+          promise.complete(new JsonArray());
+        }
       }).onFailure(ex -> {
-        LOG.error(String.format("Querying pods terminating failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
-        promise.fail(ex);
+        LOG.error(String.format("Failed to import the %s metric for cluster %s in hub %s", promKeycloakProxyQuery, clusterName, hubId));
+        promise.complete(new JsonArray());
       });
     } catch(Throwable ex) {
-      LOG.error(String.format(importDataFail, classSimpleName), ex);
-      promise.fail(ex);
+      LOG.error(String.format(importDataFail, classSimpleName));
+      promise.complete(new JsonArray());
     }
     return promise.future();
   }
@@ -1105,22 +1198,34 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("sum by (cluster, namespace, pod) (round(increase(kube_pod_init_container_status_restarts_total{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}[15m]))) > 0"));
+      String promKeycloakProxyQuery = "sum by (cluster, namespace, pod) (round(increase(kube_pod_init_container_status_restarts_total{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}[15m]))) > 0";
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
           .send()
-          .expecting(HttpResponseExpectation.SC_OK)
-          .onSuccess(metricsResponse -> {
-        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          .onComplete(metricsComplete -> {
+        try {
+          HttpResponse<Buffer> metricsResponse;
+          if(metricsComplete.succeeded()) {
+            metricsResponse = metricsComplete.result();
+            JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+            promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          } else {
+            LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+            promise.complete(new JsonArray());
+          }
+        } catch(Throwable ex) {
+          LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+          promise.complete(new JsonArray());
+        }
       }).onFailure(ex -> {
-        LOG.error(String.format("Querying pod restarts failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
-        promise.fail(ex);
+        LOG.error(String.format("Failed to import the %s metric for cluster %s in hub %s", promKeycloakProxyQuery, clusterName, hubId));
+        promise.complete(new JsonArray());
       });
     } catch(Throwable ex) {
-      LOG.error(String.format(importDataFail, classSimpleName), ex);
-      promise.fail(ex);
+      LOG.error(String.format(importDataFail, classSimpleName));
+      promise.complete(new JsonArray());
     }
     return promise.future();
   }
@@ -1134,22 +1239,34 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
       Integer promKeycloakProxyPort = Integer.parseInt(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_PORT, hubIdEnv)));
       String promKeycloakProxyHostName = config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_HOST_NAME, hubIdEnv));
       Boolean promKeycloakProxySsl = Boolean.parseBoolean(config.getString(String.format("%s_%s", ConfigKeys.PROM_KEYCLOAK_PROXY_SSL, hubIdEnv)));
-      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode("(sum(kubelet_volume_stats_used_bytes{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}) by (cluster, namespace, persistentvolumeclaim) / sum(kubelet_volume_stats_capacity_bytes) by (cluster, namespace, persistentvolumeclaim)) > 0.95"));
+      String promKeycloakProxyQuery = "(sum(kubelet_volume_stats_used_bytes{" + ("openshift-local".equals(hubId) ? "" : String.format("cluster='%s'", clusterName)) + "}) by (cluster, namespace, persistentvolumeclaim) / sum(kubelet_volume_stats_capacity_bytes) by (cluster, namespace, persistentvolumeclaim)) > 0.95";
+      String promKeycloakProxyUri = String.format("/api/v1/query?query=%s", urlEncode(promKeycloakProxyQuery));
 
       webClient.get(promKeycloakProxyPort, promKeycloakProxyHostName, promKeycloakProxyUri).ssl(promKeycloakProxySsl)
           .putHeader("Authorization", String.format("Bearer %s", accessToken))
           .send()
-          .expecting(HttpResponseExpectation.SC_OK)
-          .onSuccess(metricsResponse -> {
-        JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
-        promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          .onComplete(metricsComplete -> {
+        try {
+          HttpResponse<Buffer> metricsResponse;
+          if(metricsComplete.succeeded()) {
+            metricsResponse = metricsComplete.result();
+            JsonObject metricsBody = metricsResponse.bodyAsJsonObject();
+            promise.complete(Optional.ofNullable(metricsBody).map(b -> b.getJsonObject("data")).map(data -> data.getJsonArray("result")).orElse(new JsonArray()));
+          } else {
+            LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+            promise.complete(new JsonArray());
+          }
+        } catch(Throwable ex) {
+          LOG.error(String.format("Failed to import the %s metric for cluster %s hub %s. %s Error: %s. ", promKeycloakProxyQuery, clusterName, hubId, Optional.ofNullable(metricsComplete.result()).map(result -> result.statusCode()).orElse(500), metricsComplete.cause().getMessage()));
+          promise.complete(new JsonArray());
+        }
       }).onFailure(ex -> {
-        LOG.error(String.format("Querying full PVCs failed at %s for %s", promKeycloakProxyHostName, promKeycloakProxyUri), ex);
-        promise.fail(ex);
+        LOG.error(String.format("Failed to import the %s metric for cluster %s in hub %s", promKeycloakProxyQuery, clusterName, hubId));
+        promise.complete(new JsonArray());
       });
     } catch(Throwable ex) {
-      LOG.error(String.format(importDataFail, classSimpleName), ex);
-      promise.fail(ex);
+      LOG.error(String.format(importDataFail, classSimpleName));
+      promise.complete(new JsonArray());
     }
     return promise.future();
   }
