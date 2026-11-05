@@ -178,7 +178,7 @@ API_COUNTER_RESUME: 100
 ###################
 
 # The number of Vert.x instances to run per pod. 
-SITE_INSTANCES: 6
+SITE_INSTANCES: 12
 # The number of SPINE code generation instances of the Vertx verticle to deploy. 
 SPINE_INSTANCES: 8
 # The number of Vert.x worker instances to run per pod. 
@@ -666,3 +666,10 @@ ENABLE_FEATURE_ORDER_BARE_METAL: "{{ lookup('env', 'ENABLE_FEATURE_ORDER_BARE_ME
 ENABLE_FEATURE_ORDER_CLUSTER: "{{ lookup('env', 'ENABLE_FEATURE_ORDER_CLUSTER') | default('false', true) | bool }}"
 ENABLE_FEATURE_OBSERVE_BARE_METAL: "{{ lookup('env', 'ENABLE_FEATURE_OBSERVE_BARE_METAL') | default('true', true) | bool }}"
 ENABLE_FEATURE_OBSERVE_CLUSTER: "{{ lookup('env', 'ENABLE_FEATURE_OBSERVE_CLUSTER') | default('false', true) | bool }}"
+
+HOURLY_PRICING_GPU_NVIDIA_H100_80GB_HBM3: '4'
+HOURLY_PRICING_GPU_NVIDIA_A100_SXM4_40GB: '2.078'
+HOURLY_PRICING_GPU_Tesla_V100_PCIE_32GB: '1.214'
+HOURLY_PRICING_CPU: '0.013'
+HOURLY_PRICING_MEMORY: '0.013 / 1073741824 / 4'
+HOURLY_PRICING_STORAGE: '0.000009 / 1073741824'
