@@ -95,6 +95,9 @@ public class Cluster extends ClusterGen<BaseModel> {
    * HtmColumn: 2
    * Facet: true
    * DefaultFacet: true
+   * LinkVar: editPage
+   * Link: true
+   * Flex: 2
    **/
   protected void _clusterName(Wrap<String> w) {}
 

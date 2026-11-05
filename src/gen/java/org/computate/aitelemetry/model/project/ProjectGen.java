@@ -3484,11 +3484,11 @@ public abstract class ProjectGen<DEV> extends BaseModel {
 
   public static final String DISPLAY_NAME_tenantResource = "tenant auth resource";
   public static final String DISPLAY_NAME_localClusterName = "ACM cluster name";
-  public static final String DISPLAY_NAME_hubId = "ACM Hub";
+  public static final String DISPLAY_NAME_hubId = "Hub";
   public static final String DISPLAY_NAME_hubResource = "hub auth resource";
-  public static final String DISPLAY_NAME_clusterName = "cluster name";
+  public static final String DISPLAY_NAME_clusterName = "Cluster";
   public static final String DISPLAY_NAME_clusterResource = "cluster auth resource";
-  public static final String DISPLAY_NAME_projectName = "project name";
+  public static final String DISPLAY_NAME_projectName = "Project";
   public static final String DISPLAY_NAME_projectResource = "project auth resource";
   public static final String DISPLAY_NAME_projectDisplayName = "project display name";
   public static final String DISPLAY_NAME_projectTitle = "project title";
@@ -3792,10 +3792,6 @@ public abstract class ProjectGen<DEV> extends BaseModel {
       return 2;
     case VAR_projectName:
       return 3;
-    case VAR_defaultOpenShiftProject:
-      return 5;
-    case VAR_defaultOpsProject:
-      return 6;
       default:
         return BaseModel.htmColumnBaseModel(var);
     }

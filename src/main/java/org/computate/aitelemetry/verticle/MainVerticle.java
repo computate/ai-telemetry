@@ -117,15 +117,15 @@ import org.computate.aitelemetry.result.BaseResult;
 import org.computate.aitelemetry.timezone.TimeZoneEnUSGenApiService;
 import org.computate.aitelemetry.timezone.TimeZoneEnUSApiServiceImpl;
 import org.computate.aitelemetry.timezone.TimeZone;
+import org.computate.aitelemetry.model.MapModelEnUSGenApiService;
+import org.computate.aitelemetry.model.MapModelEnUSApiServiceImpl;
+import org.computate.aitelemetry.model.MapModel;
 import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSGenApiService;
 import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloperEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.developer.aitelemetry.AiTelemetryDeveloper;
 import org.computate.aitelemetry.page.SitePageEnUSGenApiService;
 import org.computate.aitelemetry.page.SitePageEnUSApiServiceImpl;
 import org.computate.aitelemetry.page.SitePage;
-import org.computate.aitelemetry.model.MapModelEnUSGenApiService;
-import org.computate.aitelemetry.model.MapModelEnUSApiServiceImpl;
-import org.computate.aitelemetry.model.MapModel;
 import org.computate.aitelemetry.model.tenant.TenantEnUSGenApiService;
 import org.computate.aitelemetry.model.tenant.TenantEnUSApiServiceImpl;
 import org.computate.aitelemetry.model.tenant.Tenant;
@@ -618,6 +618,10 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       apiTimeZone.setVertx(vertx);
       apiTimeZone.setConfig(config);
       apiTimeZone.setWebClient(webClient);
+      MapModelEnUSApiServiceImpl apiMapModel = new MapModelEnUSApiServiceImpl();
+      apiMapModel.setVertx(vertx);
+      apiMapModel.setConfig(config);
+      apiMapModel.setWebClient(webClient);
       AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
       apiAiTelemetryDeveloper.setVertx(vertx);
       apiAiTelemetryDeveloper.setConfig(config);
@@ -626,10 +630,6 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       apiSitePage.setVertx(vertx);
       apiSitePage.setConfig(config);
       apiSitePage.setWebClient(webClient);
-      MapModelEnUSApiServiceImpl apiMapModel = new MapModelEnUSApiServiceImpl();
-      apiMapModel.setVertx(vertx);
-      apiMapModel.setConfig(config);
-      apiMapModel.setWebClient(webClient);
       TenantEnUSApiServiceImpl apiTenant = new TenantEnUSApiServiceImpl();
       apiTenant.setVertx(vertx);
       apiTenant.setConfig(config);
@@ -698,15 +698,15 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
           apiSiteUser.createAuthorizationScopes(adminToken, realmName, clientId, clientUuid, defaultScopes).onSuccess(authorizationScopeResponse -> {
               apiTimeZone.authorizeGroupData(adminToken, realmName, clientId, clientUuid, TimeZone.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes)
                   .onSuccess(q2 -> {
-                apiAiTelemetryDeveloper.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "COMPANYPRODUCT-ai-telemetry-developer-GET", new String[] { "GET" }, defaultScopes)
-                    .compose(q3 -> apiAiTelemetryDeveloper.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }, defaultScopes))
-                    .compose(q3 -> apiAiTelemetryDeveloper.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                apiMapModel.authorizeGroupData(adminToken, realmName, clientId, clientUuid, MapModel.CLASS_AUTH_RESOURCE, "MapModelViewer", new String[] { "GET" }, defaultScopes)
+                    .compose(q3 -> apiMapModel.authorizeGroupData(adminToken, realmName, clientId, clientUuid, MapModel.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes))
                     .onSuccess(q3 -> {
-                  apiSitePage.authorizeGroupData(adminToken, realmName, clientId, clientUuid, SitePage.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }, defaultScopes)
-                      .compose(q4 -> apiSitePage.authorizeGroupData(adminToken, realmName, clientId, clientUuid, SitePage.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
+                  apiAiTelemetryDeveloper.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "COMPANYPRODUCT-ai-telemetry-developer-GET", new String[] { "GET" }, defaultScopes)
+                      .compose(q4 -> apiAiTelemetryDeveloper.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }, defaultScopes))
+                      .compose(q4 -> apiAiTelemetryDeveloper.authorizeGroupData(adminToken, realmName, clientId, clientUuid, AiTelemetryDeveloper.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
                       .onSuccess(q4 -> {
-                    apiMapModel.authorizeGroupData(adminToken, realmName, clientId, clientUuid, MapModel.CLASS_AUTH_RESOURCE, "MapModelViewer", new String[] { "GET" }, defaultScopes)
-                        .compose(q5 -> apiMapModel.authorizeGroupData(adminToken, realmName, clientId, clientUuid, MapModel.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET" }, defaultScopes))
+                    apiSitePage.authorizeGroupData(adminToken, realmName, clientId, clientUuid, SitePage.CLASS_AUTH_RESOURCE, "Admin", new String[] { "POST", "PATCH", "GET", "DELETE", "Admin" }, defaultScopes)
+                        .compose(q5 -> apiSitePage.authorizeGroupData(adminToken, realmName, clientId, clientUuid, SitePage.CLASS_AUTH_RESOURCE, "SuperAdmin", new String[] { "POST", "PATCH", "GET", "DELETE", "SuperAdmin" }, defaultScopes))
                         .onSuccess(q5 -> {
                       apiTenant.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Tenant.CLASS_AUTH_RESOURCE, "TenantAdmin", new String[] { "GET", "GETManager" }, defaultScopes)
                           .compose(q6 -> apiTenant.authorizeGroupData(adminToken, realmName, clientId, clientUuid, Tenant.CLASS_AUTH_RESOURCE, "Admin", new String[] { "GET", "GETManager" }, defaultScopes))
@@ -1453,6 +1453,10 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       initializeApiService(apiTimeZone);
       registerApiService(TimeZoneEnUSGenApiService.class, apiTimeZone, TimeZone.getClassApiAddress());
 
+      MapModelEnUSApiServiceImpl apiMapModel = new MapModelEnUSApiServiceImpl();
+      initializeApiService(apiMapModel);
+      registerApiService(MapModelEnUSGenApiService.class, apiMapModel, MapModel.getClassApiAddress());
+
       AiTelemetryDeveloperEnUSApiServiceImpl apiAiTelemetryDeveloper = new AiTelemetryDeveloperEnUSApiServiceImpl();
       initializeApiService(apiAiTelemetryDeveloper);
       registerApiService(AiTelemetryDeveloperEnUSGenApiService.class, apiAiTelemetryDeveloper, AiTelemetryDeveloper.getClassApiAddress());
@@ -1460,10 +1464,6 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
       SitePageEnUSApiServiceImpl apiSitePage = new SitePageEnUSApiServiceImpl();
       initializeApiService(apiSitePage);
       registerApiService(SitePageEnUSGenApiService.class, apiSitePage, SitePage.getClassApiAddress());
-
-      MapModelEnUSApiServiceImpl apiMapModel = new MapModelEnUSApiServiceImpl();
-      initializeApiService(apiMapModel);
-      registerApiService(MapModelEnUSGenApiService.class, apiMapModel, MapModel.getClassApiAddress());
 
       TenantEnUSApiServiceImpl apiTenant = new TenantEnUSApiServiceImpl();
       initializeApiService(apiTenant);
@@ -1641,7 +1641,7 @@ public class MainVerticle extends MainVerticleGen<AbstractVerticle> {
 
       SiteUserEnUSApiServiceImpl apiSiteUser = new SiteUserEnUSApiServiceImpl();
       initializeApiService(apiSiteUser);
-      SiteRoutes.routes(vertx, apiRouter, oauth2AuthenticationProvider, oauth2AuthHandler, config(), webClient, jinjava, apiSiteUser);
+      SiteRoutes.routes(vertx, rootRouter, oauth2AuthenticationProvider, oauth2AuthHandler, config(), webClient, jinjava, apiSiteUser);
 
       LOG.info("The UI was configured properly.");
       promise.complete();

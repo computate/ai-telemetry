@@ -65,6 +65,9 @@ public class Hub extends HubGen<BaseModel> {
    * VarId: true
    * Facet: true
    * DefaultFacet: true
+   * LinkVar: editPage
+   * Link: true
+   * Flex: 2
    **/
   protected void _hubId(Wrap<String> w) {
     w.o(toId(hubName));

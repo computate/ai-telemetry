@@ -3353,36 +3353,6 @@ public class BareMetalOrderEnUSGenApiServiceImpl extends BaseApiServiceImpl impl
         String status = Optional.ofNullable(Optional.ofNullable(new_status).orElse(old_status)).orElse(null);
         // if(!Objects.equals(old_status, status))
           // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_status, patch), status);
-        String created = Optional.ofNullable(Optional.ofNullable(new_created).orElse(old_created)).orElse(null);
-        // if(!Objects.equals(old_created, created))
-          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_created, patch), created);
-        Boolean archived = Optional.ofNullable(Optional.ofNullable(new_archived).orElse(old_archived)).orElse(null);
-        // if(!Objects.equals(old_archived, archived))
-          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_archived, patch), archived);
-        String sessionId = Optional.ofNullable(Optional.ofNullable(new_sessionId).orElse(old_sessionId)).orElse(null);
-        // if(!Objects.equals(old_sessionId, sessionId))
-          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_sessionId, patch), sessionId);
-        String userKey = Optional.ofNullable(Optional.ofNullable(new_userKey).orElse(old_userKey)).orElse(null);
-        // if(!Objects.equals(old_userKey, userKey))
-          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_userKey, patch), userKey);
-        String objectTitle = Optional.ofNullable(Optional.ofNullable(new_objectTitle).orElse(old_objectTitle)).orElse(null);
-        // if(!Objects.equals(old_objectTitle, objectTitle))
-          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_objectTitle, patch), objectTitle);
-        String apiUrl = Optional.ofNullable(Optional.ofNullable(new_apiUrl).orElse(old_apiUrl)).orElse(null);
-        // if(!Objects.equals(old_apiUrl, apiUrl))
-          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_apiUrl, patch), apiUrl);
-        String displayPage = Optional.ofNullable(Optional.ofNullable(new_displayPage).orElse(old_displayPage)).orElse(null);
-        // if(!Objects.equals(old_displayPage, displayPage))
-          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_displayPage, patch), displayPage);
-        String editPage = Optional.ofNullable(Optional.ofNullable(new_editPage).orElse(old_editPage)).orElse(null);
-        // if(!Objects.equals(old_editPage, editPage))
-          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_editPage, patch), editPage);
-        String userPage = Optional.ofNullable(Optional.ofNullable(new_userPage).orElse(old_userPage)).orElse(null);
-        // if(!Objects.equals(old_userPage, userPage))
-          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_userPage, patch), userPage);
-        String download = Optional.ofNullable(Optional.ofNullable(new_download).orElse(old_download)).orElse(null);
-        // if(!Objects.equals(old_download, download))
-          // json.put(BareMetalOrder.varJson(BareMetalOrder.VAR_download, patch), download);
 
         promise.complete(json);
       }

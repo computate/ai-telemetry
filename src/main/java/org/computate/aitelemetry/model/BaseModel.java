@@ -250,6 +250,7 @@ public class BaseModel extends BaseModelGen<Object> implements ComputateBaseMode
    * Icon: <i class="{{ FONTAWESOME_STYLE }} fa-pen-to-square"></i>
    * VarUrlEditPage: true
    * UpsertFormat: null
+   * Link: true
    */
   protected void _editPage(Wrap<String> w) {
     String f = enUSStringFormatUrlEditPageForClass();

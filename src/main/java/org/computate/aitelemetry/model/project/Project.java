@@ -94,7 +94,7 @@ public class Project extends ProjectGen<BaseModel> {
    * {@inheritDoc}
    * DocValues: true
    * Persist: true
-   * DisplayName: ACM Hub
+   * DisplayName: Hub
    * Description: The name of the ACM Hub for this cluster in Prometheus Keycloak Proxy. 
    * HtmRow: 3
    * HtmCell: 1
@@ -122,7 +122,7 @@ public class Project extends ProjectGen<BaseModel> {
    * {@inheritDoc}
    * DocValues: true
    * Persist: true
-   * DisplayName: cluster name
+   * DisplayName: Cluster
    * Description: The name of this cluster
    * HtmRow: 3
    * HtmCell: 3
@@ -150,12 +150,15 @@ public class Project extends ProjectGen<BaseModel> {
    * {@inheritDoc}
    * DocValues: true
    * Persist: true
-   * DisplayName: project name
+   * DisplayName: Project
    * Description: The name of this project
    * HtmRow: 3
    * HtmCell: 5
    * HtmColumn: 3
    * Facet: true
+   * LinkVar: editPage
+   * Link: true
+   * Flex: 2
    **/
   protected void _projectName(Wrap<String> w) {}
 
@@ -238,7 +241,7 @@ public class Project extends ProjectGen<BaseModel> {
    * HtmRow: 3
    * HtmCell: 10
    * DefaultFacet: true
-   * HtmColumn: 5
+   * Flex: 0.5
    **/
   protected void _defaultOpenShiftProject(Wrap<Boolean> w) {
     w.o(false);
@@ -254,7 +257,7 @@ public class Project extends ProjectGen<BaseModel> {
    * HtmRow: 3
    * HtmCell: 10
    * DefaultFacet: true
-   * HtmColumn: 6
+   * Flex: 0.5
    **/
   protected void _defaultOpsProject(Wrap<Boolean> w) {
     w.o(false);

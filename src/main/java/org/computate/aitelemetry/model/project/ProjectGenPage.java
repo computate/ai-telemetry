@@ -102,6 +102,7 @@ public class ProjectGenPage extends ProjectGenPageGen<PageLayout> {
 
     pagination.put("1L", 1L);
     pagination.put("0L", 0L);
+    pagination.put("page", start / rows);
     pagination.put("start", start);
     pagination.put("rows", rows);
     pagination.put("rowsPrevious", rows / 2);

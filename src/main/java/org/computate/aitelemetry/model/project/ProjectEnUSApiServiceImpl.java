@@ -67,74 +67,75 @@ import jinjava.org.jsoup.nodes.Document;
  **/
 public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
 
-  @Override
-  public void editpageProjectPageInit(JsonObject ctx, ProjectPage page, SearchList<Project> listProject, Promise<Void> promise) {
-    String accessToken = listProject.getSiteRequest_().getUserPrincipal().getString("access_token");
-    Project project = listProject.first();
-    if(project != null) {
-      String hubId = project.getHubId();
-      String clusterName = project.getClusterName();
-      String projectName = project.getProjectName();
-      JsonObject clusterJson = new JsonObject()
-          .put(Cluster.VAR_hubId, hubId)
-          .put(Cluster.VAR_clusterName, clusterName)
-          ;
-      DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm", Locale.US);
-      ZonedDateTime start = page.getDefaultRangeStart();
-      ZonedDateTime end = page.getDefaultRangeEnd();
-      String facetRangeGapVal = page.getDefaultRangeGap();
-      String gapBackInTime;
-      String gap;
-      switch (facetRangeGapVal) {
-        case "+1YEAR":
-          gapBackInTime = String.format("%sd", Duration.between(start, end).toDays());
-          gap = "1d";
-          break;
-        case "+1MONTH":
-          gapBackInTime = String.format("%sd", Duration.between(start, end).toDays());
-          gap = "1d";
-          break;
-        case "+1DAY":
-          gapBackInTime = String.format("%sd", Duration.between(start, end).toDays());
-          gap = "1d";
-          break;
-        case "+1HOUR":
-          gapBackInTime = String.format("%sh", Duration.between(start, end).toHours());
-          gap = "1h";
-          break;
-        case "+1MINUTE":
-          gapBackInTime = String.format("%sm", Duration.between(start, end).toMinutes());
-          gap = "1m";
-          break;
-        default:
-          gapBackInTime = "31d";
-          gap = "1d";
-      }
-      ProjectEnUSApiServiceImpl.queryGpuProjects(vertx, webClient, config, clusterJson, Project.CLASS_SIMPLE_NAME, accessToken, gapBackInTime, gap, listProject).onSuccess(gpuDevicesTotal -> {
-        ProjectEnUSApiServiceImpl.queryVllmProjects(vertx, webClient, config, clusterJson, Project.CLASS_SIMPLE_NAME, accessToken, gapBackInTime, gap, listProject).onSuccess(vllmTotal -> {
-          JsonObject gpuDeviceResult = gpuDevicesTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
-              Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-              && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
-              ).findFirst().orElse(null);
-          JsonObject vllmResult = vllmTotal.stream().map(o -> (JsonObject)o).filter(metrics -> 
-              Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
-              && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
-              ).findFirst().orElse(null);
-          Boolean gpuEnabled = gpuDeviceResult != null;
-          Boolean vllmEnabled = vllmResult != null;
-          ctx.put(Project.VAR_gpuEnabled, gpuEnabled);
-          ctx.put(Project.VAR_vllmEnabled, vllmEnabled);
-          super.editpageProjectPageInit(ctx, page, listProject, promise);
-        }).onFailure(ex -> {
-          promise.fail(ex);
-        });
-      }).onFailure(ex -> {
-        promise.fail(ex);
-      });
-    } else {
-      promise.complete();
-    }
-  }
+  // @Override
+  // public void editpageProjectPageInit(JsonObject ctx, ProjectPage page, SearchList<Project> listProject, Promise<Void> promise) {
+  //   String accessToken = listProject.getSiteRequest_().getUserPrincipal().getString("access_token");
+  //   Project project = listProject.first();
+  //   if(project != null) {
+  //     String hubId = project.getHubId();
+  //     String clusterName = project.getClusterName();
+  //     String projectName = project.getProjectName();
+  //     JsonObject clusterJson = new JsonObject()
+  //         .put(Cluster.VAR_hubId, hubId)
+  //         .put(Cluster.VAR_clusterName, clusterName)
+  //         ;
+  //     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm", Locale.US);
+  //     ZonedDateTime start = page.getDefaultRangeStart();
+  //     ZonedDateTime end = page.getDefaultRangeEnd();
+  //     String facetRangeGapVal = page.getDefaultRangeGap();
+  //     String gapBackInTime;
+  //     String gap;
+  //     switch (facetRangeGapVal) {
+  //       case "+1YEAR":
+  //         gapBackInTime = String.format("%sd", Duration.between(start, end).toDays());
+  //         gap = "1d";
+  //         break;
+  //       case "+1MONTH":
+  //         gapBackInTime = String.format("%sd", Duration.between(start, end).toDays());
+  //         gap = "1d";
+  //         break;
+  //       case "+1DAY":
+  //         gapBackInTime = String.format("%sd", Duration.between(start, end).toDays());
+  //         gap = "1d";
+  //         break;
+  //       case "+1HOUR":
+  //         gapBackInTime = String.format("%sh", Duration.between(start, end).toHours());
+  //         gap = "1h";
+  //         break;
+  //       case "+1MINUTE":
+  //         gapBackInTime = String.format("%sm", Duration.between(start, end).toMinutes());
+  //         gap = "1m";
+  //         break;
+  //       default:
+  //         gapBackInTime = "31d";
+  //         gap = "1d";
+  //     }
+  //     ProjectEnUSApiServiceImpl.queryGpuProjects(vertx, webClient, config, clusterJson, Project.CLASS_SIMPLE_NAME, accessToken, gapBackInTime, gap, listProject).onComplete(gpuDevicesTotalResponse -> {
+  //       ProjectEnUSApiServiceImpl.queryVllmProjects(vertx, webClient, config, clusterJson, Project.CLASS_SIMPLE_NAME, accessToken, gapBackInTime, gap, listProject).onComplete(vllmTotalResponse -> {
+  //         try {
+  //           JsonObject gpuDeviceResult = gpuDevicesTotalResponse.failed() ? null : gpuDevicesTotalResponse.result().stream().map(o -> (JsonObject)o).filter(metrics -> 
+  //               Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+  //               && projectName.equals(metrics.getJsonObject("metric").getString("exported_namespace"))
+  //               ).findFirst().orElse(null);
+  //           JsonObject vllmResult = vllmTotalResponse.failed() ? null : vllmTotalResponse.result().stream().map(o -> (JsonObject)o).filter(metrics -> 
+  //               Objects.equals(clusterName, metrics.getJsonObject("metric").getString("cluster"))
+  //               && projectName.equals(metrics.getJsonObject("metric").getString("namespace"))
+  //               ).findFirst().orElse(null);
+  //           Boolean gpuEnabled = gpuDeviceResult != null;
+  //           Boolean vllmEnabled = vllmResult != null;
+  //           ctx.put(Project.VAR_gpuEnabled, gpuEnabled);
+  //           ctx.put(Project.VAR_vllmEnabled, vllmEnabled);
+  //           super.editpageProjectPageInit(ctx, page, listProject, promise);
+  //         } catch(Throwable ex) {
+  //           LOG.error("Failed to prepare project edit page", ex);
+  //           promise.fail(ex);
+  //         }
+  //       }).onFailure(ex -> promise.fail(ex));
+  //     }).onFailure(ex -> promise.fail(ex));
+  //   } else {
+  //     promise.complete();
+  //   }
+  // }
 
   ////////////////////
   // Project import //
@@ -453,7 +454,8 @@ public class ProjectEnUSApiServiceImpl extends ProjectEnUSGenApiServiceImpl {
                                         || projectName.equals("agent-standbox-system")
                                         || projectName.equals("assisted-installer")
                                         || projectName.equals("istio-system")
-                                        || projectName.equals("knative-")
+                                        || projectName.startsWith("knative-")
+                                        || projectName.startsWith("redhat-ods-")
                                         || projectName.equals("kube-public")
                                         || projectName.equals("kube-system")
                                         || projectName.equals("metallb-system")
